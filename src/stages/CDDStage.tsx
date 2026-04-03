@@ -1,13 +1,16 @@
 import { useState } from "react";
 import type { CDDOutputs, CDDLayer } from "@/lib/types";
 import { CDD_LAYERS } from "@/lib/types";
+import { MOCK_CDD_CONTENT } from "@/lib/mock-data";
+import { LayerContent } from "@/components/cdd/LayerContent";
 
 interface CDDStageProps {
   outputs: CDDOutputs;
   gateComplete: boolean;
+  mode?: "demo" | "live";
 }
 
-export function CDDStage({ outputs, gateComplete }: CDDStageProps) {
+export function CDDStage({ outputs, gateComplete, mode = "demo" }: CDDStageProps) {
   const [expandedLayer, setExpandedLayer] = useState<CDDLayer | null>(null);
 
   const completedCount = CDD_LAYERS.filter(
@@ -138,7 +141,15 @@ export function CDDStage({ outputs, gateComplete }: CDDStageProps) {
               {isExpanded && (
                 <div className="px-4 pb-4 border-t border-border-subtle">
                   {isComplete ? (
-                    <LayerPreview layer={layer.key} filePath={filePath!} />
+                    <LayerContent
+                      layer={layer.key}
+                      content={
+                        mode === "demo"
+                          ? MOCK_CDD_CONTENT[layer.key]
+                          : ""
+                      }
+                      loading={mode === "live" && !MOCK_CDD_CONTENT[layer.key]}
+                    />
                   ) : (
                     <p className="text-xs text-text-muted py-3">
                       Waiting for Product Team to generate this layer...
@@ -149,51 +160,6 @@ export function CDDStage({ outputs, gateComplete }: CDDStageProps) {
             </div>
           );
         })}
-      </div>
-
-      {/* HIL approval (shown when CDD complete but not yet approved) */}
-      {gateComplete && (
-        <div className="mt-6 p-4 rounded-lg bg-stage-cdd/10 border border-stage-cdd/30">
-          <p className="text-sm text-text-primary mb-3">
-            All 6 contract layers are ready. Approve to proceed to TDD.
-          </p>
-          <button
-            className="
-              px-4 py-2 rounded-md
-              bg-stage-cdd text-white text-sm font-medium
-              hover:brightness-110 transition-all cursor-pointer
-            "
-          >
-            Approve Contracts
-          </button>
-        </div>
-      )}
-    </div>
-  );
-}
-
-// ─── Layer Preview (placeholder — will fetch file content in Phase 2) ─────
-
-function LayerPreview({ layer, filePath }: { layer: CDDLayer; filePath: string }) {
-  const descriptions: Record<CDDLayer, string> = {
-    domain: "Business entities, ubiquitous language, domain events, and business rules.",
-    prd: "Features, user stories, API specifications, and acceptance criteria.",
-    design: "Architecture decisions, DB schemas, data flows, and component diagrams.",
-    data_contract: "Pydantic/Zod models, field validation rules, and test data factories.",
-    logic_contract: "Business rules (BR-XXX), state machines, edge cases (EC-XXX).",
-    system_contract: "DI patterns, event contracts, API contracts, and infra requirements.",
-  };
-
-  return (
-    <div className="py-3">
-      <p className="text-xs text-text-secondary mb-2">{descriptions[layer]}</p>
-      <div className="flex items-center gap-2">
-        <span className="text-[10px] font-mono text-text-muted bg-surface-2 px-2 py-1 rounded">
-          {filePath}
-        </span>
-        <button className="text-[10px] text-stage-cdd hover:underline cursor-pointer">
-          View file
-        </button>
       </div>
     </div>
   );

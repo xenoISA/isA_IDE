@@ -10,13 +10,29 @@ interface InspectorProps {
   events: OrchestrationEvent[];
   sharedState: SharedState;
   isRunning: boolean;
+  collapsed?: boolean;
+  onToggle?: () => void;
 }
 
-export function Inspector({ events, sharedState, isRunning }: InspectorProps) {
+export function Inspector({ events, sharedState, isRunning, collapsed = false, onToggle }: InspectorProps) {
   const [tab, setTab] = useState<Tab>("trace");
 
+  if (collapsed) {
+    return (
+      <aside className="inspector-collapsed w-[10px] flex-shrink-0 border-l border-border bg-surface-1 flex items-start justify-center transition-all duration-200">
+        <button
+          onClick={onToggle}
+          className="mt-3 text-text-muted hover:text-text-secondary cursor-pointer text-[10px] leading-none"
+          title="Expand inspector"
+        >
+          &lt;
+        </button>
+      </aside>
+    );
+  }
+
   return (
-    <aside className="w-72 flex-shrink-0 border-l border-border bg-surface-1 flex flex-col">
+    <aside className="inspector-expanded w-72 flex-shrink-0 border-l border-border bg-surface-1 flex flex-col transition-all duration-200">
       {/* Tabs */}
       <div className="flex border-b border-border">
         {(["trace", "gates"] as Tab[]).map((t) => (
@@ -79,6 +95,16 @@ export function Inspector({ events, sharedState, isRunning }: InspectorProps) {
           </div>
         )}
       </div>
+
+      {/* Collapse button */}
+      {onToggle && (
+        <button
+          onClick={onToggle}
+          className="px-3 py-1.5 border-t border-border text-[10px] text-text-muted hover:text-text-secondary cursor-pointer transition-colors text-center"
+        >
+          Collapse &gt;
+        </button>
+      )}
     </aside>
   );
 }

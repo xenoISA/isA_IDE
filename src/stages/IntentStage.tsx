@@ -1,11 +1,19 @@
 import { useState, useCallback } from "react";
-import type { OrchestrationEvent } from "@/lib/types";
+import type { OrchestrationEvent, Session } from "@/lib/types";
 import { startOrchestration, streamOrchestration } from "@/lib/api";
+import { SessionList } from "@/components/session/SessionList";
 
 interface IntentStageProps {
   onStart: () => void;
   onEvent: (event: OrchestrationEvent) => void;
   isRunning: boolean;
+  mode: "demo" | "live";
+  mockStart: (prompt: string) => void;
+  promptRef: React.MutableRefObject<string>;
+  projectRef: React.MutableRefObject<string>;
+  sessions: Session[];
+  onResume: (sessionId: string) => void;
+  onDeleteSession: (sessionId: string) => void;
 }
 
 const QUICK_ACTIONS = [
@@ -16,16 +24,46 @@ const QUICK_ACTIONS = [
   { label: "Run TDD", prompt: "Run the full TDD pipeline for " },
 ];
 
-export function IntentStage({ onStart, onEvent, isRunning }: IntentStageProps) {
+export function IntentStage({
+  onStart,
+  onEvent,
+  isRunning,
+  mode,
+  mockStart,
+  promptRef,
+  projectRef,
+  sessions,
+  onResume,
+  onDeleteSession,
+}: IntentStageProps) {
   const [prompt, setPrompt] = useState("");
   const [project, setProject] = useState("");
   const [error, setError] = useState<string | null>(null);
+  const [showSessions, setShowSessions] = useState(false);
+
+  const handlePromptChange = (value: string) => {
+    setPrompt(value);
+    promptRef.current = value;
+  };
+
+  const handleProjectChange = (value: string) => {
+    setProject(value);
+    projectRef.current = value;
+  };
 
   const handleGo = useCallback(async () => {
     if (!prompt.trim()) return;
     setError(null);
+    promptRef.current = prompt;
+    projectRef.current = project;
     onStart();
 
+    if (mode === "demo") {
+      mockStart(prompt.trim());
+      return;
+    }
+
+    // Live mode
     try {
       const { session_id } = await startOrchestration({
         projectId: project || "default",
@@ -46,7 +84,7 @@ export function IntentStage({ onStart, onEvent, isRunning }: IntentStageProps) {
       setError(msg);
       onEvent({ type: "error", error: msg });
     }
-  }, [prompt, project, onStart, onEvent]);
+  }, [prompt, project, onStart, onEvent, mode, mockStart, promptRef, projectRef]);
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === "Enter" && e.metaKey) {
@@ -57,18 +95,40 @@ export function IntentStage({ onStart, onEvent, isRunning }: IntentStageProps) {
   return (
     <div className="max-w-2xl mx-auto pt-16">
       {/* Header */}
-      <h1 className="text-2xl font-semibold text-text-primary mb-1">
-        What do you want to build?
-      </h1>
+      <div className="flex items-center justify-between mb-1">
+        <h1 className="text-2xl font-semibold text-text-primary">
+          What do you want to build?
+        </h1>
+        {sessions.length > 0 && (
+          <button
+            onClick={() => setShowSessions(!showSessions)}
+            className="text-xs text-text-muted hover:text-text-secondary cursor-pointer"
+          >
+            {showSessions ? "Hide sessions" : `${sessions.length} session${sessions.length !== 1 ? "s" : ""}`}
+          </button>
+        )}
+      </div>
       <p className="text-sm text-text-muted mb-8">
         Describe your intent. The pipeline handles contracts, tests, code, and deployment.
       </p>
+
+      {/* Session list (toggleable) */}
+      {showSessions && (
+        <div className="mb-6 p-3 rounded-lg bg-surface-1 border border-border">
+          <h3 className="text-xs font-medium text-text-secondary mb-2">Previous Sessions</h3>
+          <SessionList
+            sessions={sessions}
+            onResume={onResume}
+            onDelete={onDeleteSession}
+          />
+        </div>
+      )}
 
       {/* Prompt input */}
       <div className="relative">
         <textarea
           value={prompt}
-          onChange={(e) => setPrompt(e.target.value)}
+          onChange={(e) => handlePromptChange(e.target.value)}
           onKeyDown={handleKeyDown}
           placeholder="e.g. Build a notification service that sends alerts via email and Slack when pipeline runs fail..."
           disabled={isRunning}
@@ -93,7 +153,7 @@ export function IntentStage({ onStart, onEvent, isRunning }: IntentStageProps) {
         <input
           type="text"
           value={project}
-          onChange={(e) => setProject(e.target.value)}
+          onChange={(e) => handleProjectChange(e.target.value)}
           placeholder="Target project (e.g. isA_Agent_SDK)"
           disabled={isRunning}
           className="
@@ -134,7 +194,7 @@ export function IntentStage({ onStart, onEvent, isRunning }: IntentStageProps) {
           {QUICK_ACTIONS.map((action) => (
             <button
               key={action.label}
-              onClick={() => setPrompt(action.prompt)}
+              onClick={() => handlePromptChange(action.prompt)}
               disabled={isRunning}
               className="
                 px-3 py-1.5 rounded-md
