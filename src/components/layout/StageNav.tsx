@@ -1,17 +1,27 @@
+import { motion } from "framer-motion";
 import type { Stage, Gates } from "@/lib/types";
 
-const STAGES: { key: Stage; label: string; colorVar: string }[] = [
-  { key: "intent", label: "Intent", colorVar: "var(--color-stage-intent)" },
-  { key: "cdd", label: "CDD", colorVar: "var(--color-stage-cdd)" },
-  { key: "tdd", label: "TDD", colorVar: "var(--color-stage-tdd)" },
-  { key: "code", label: "Code", colorVar: "var(--color-stage-code)" },
-  { key: "ship", label: "Ship", colorVar: "var(--color-stage-ship)" },
+const STAGES: { key: Stage; label: string }[] = [
+  { key: "intent", label: "Intent" },
+  { key: "cdd", label: "CDD" },
+  { key: "tdd", label: "TDD" },
+  { key: "code", label: "Code" },
+  { key: "ship", label: "Ship" },
 ];
 
 const GATE_MAP: Partial<Record<Stage, keyof Gates>> = {
   cdd: "cdd_complete",
   tdd: "tests_pass",
   ship: "deploy_success",
+};
+
+/** Order index used to determine which connectors are "completed" */
+const STAGE_INDEX: Record<Stage, number> = {
+  intent: 0,
+  cdd: 1,
+  tdd: 2,
+  code: 3,
+  ship: 4,
 };
 
 interface StageNavProps {
@@ -21,80 +31,133 @@ interface StageNavProps {
   isRunning: boolean;
 }
 
-export function StageNav({ activeStage, onStageChange, gates, isRunning }: StageNavProps) {
+function GateCircle({ complete }: { complete: boolean }) {
   return (
-    <nav className="flex items-center gap-1 px-4 py-2 bg-surface-1 border-b border-border">
-      {/* Logo */}
-      <span className="text-sm font-semibold text-text-secondary mr-4 tracking-wider">
-        isA
-        <span className="text-text-primary ml-0.5">IDE</span>
-      </span>
+    <svg
+      width="8"
+      height="8"
+      viewBox="0 0 8 8"
+      className="absolute -top-1 -right-1"
+      aria-hidden="true"
+    >
+      <circle
+        cx="4"
+        cy="4"
+        r="3.5"
+        className={
+          complete
+            ? "fill-accent stroke-accent/30"
+            : "fill-surface-2 stroke-border"
+        }
+        strokeWidth="1"
+      />
+    </svg>
+  );
+}
 
-      {/* Pipeline connector + stages */}
-      <div className="flex items-center gap-0.5">
-        {STAGES.map((stage, i) => {
-          const isActive = activeStage === stage.key;
-          const gateKey = GATE_MAP[stage.key];
-          const gateComplete = gateKey ? gates[gateKey] : false;
+function Connector({ completed }: { completed: boolean }) {
+  return (
+    <div className="flex items-center w-6 mx-0.5">
+      {completed ? (
+        <div className="h-px w-full bg-accent/50" />
+      ) : (
+        <svg width="100%" height="2" className="overflow-visible">
+          <line
+            x1="0"
+            y1="1"
+            x2="100%"
+            y2="1"
+            className="stroke-border"
+            strokeWidth="1"
+            strokeDasharray="3 3"
+          />
+        </svg>
+      )}
+    </div>
+  );
+}
 
-          return (
-            <div key={stage.key} className="flex items-center">
-              {/* Connector line */}
-              {i > 0 && (
-                <div
-                  className="w-6 h-px mx-0.5"
-                  style={{
-                    background: gateComplete
-                      ? "var(--color-gate-complete)"
-                      : "var(--color-border)",
-                  }}
-                />
-              )}
+export function StageNav({
+  activeStage,
+  onStageChange,
+  gates,
+  isRunning,
+}: StageNavProps) {
+  const activeIdx = STAGE_INDEX[activeStage];
 
-              {/* Stage button */}
-              <button
-                onClick={() => onStageChange(stage.key)}
-                className={`
-                  relative px-4 py-1.5 rounded-md text-xs font-medium
-                  transition-all duration-150 cursor-pointer
-                  ${isActive
-                    ? "text-white"
-                    : "text-text-secondary hover:text-text-primary hover:bg-surface-2"
-                  }
-                `}
-                style={
-                  isActive
-                    ? { background: stage.colorVar, boxShadow: `0 0 12px ${stage.colorVar}40` }
-                    : undefined
-                }
-              >
-                {stage.label}
+  /** A connector is "completed" if the gate for the stage it leads INTO is complete */
+  function isConnectorCompleted(stageIdx: number): boolean {
+    const stage = STAGES[stageIdx];
+    if (!stage) return false;
+    const gateKey = GATE_MAP[stage.key];
+    if (gateKey && gates[gateKey]) return true;
+    // Also mark completed if every prior gate is done and this stage is past
+    if (stageIdx <= activeIdx) {
+      const priorGates = STAGES.slice(0, stageIdx)
+        .map((s) => GATE_MAP[s.key])
+        .filter(Boolean) as (keyof Gates)[];
+      return priorGates.every((g) => gates[g]);
+    }
+    return false;
+  }
 
-                {/* Gate indicator dot */}
-                {gateKey && (
-                  <span
-                    className="absolute -top-0.5 -right-0.5 w-2 h-2 rounded-full"
-                    style={{
-                      background: gateComplete
-                        ? "var(--color-gate-complete)"
-                        : "var(--color-gate-locked)",
-                    }}
-                  />
-                )}
-              </button>
+  return (
+    <nav className="mx-4 mt-3 mb-1">
+      <div className="glass rounded-[var(--radius-outer)] px-4 py-2 flex items-center gap-1">
+        {/* Logo */}
+        <span className="text-sm font-medium tracking-wide text-text-secondary mr-5 select-none">
+          isA
+          <span className="text-text-muted ml-0.5">IDE</span>
+        </span>
+
+        {/* Pipeline stages */}
+        <div className="flex items-center">
+          {STAGES.map((stage, i) => {
+            const isActive = activeStage === stage.key;
+            const gateKey = GATE_MAP[stage.key];
+            const gateComplete = gateKey ? gates[gateKey] : false;
+
+            return (
+              <div key={stage.key} className="flex items-center">
+                {/* Connector line */}
+                {i > 0 && <Connector completed={isConnectorCompleted(i)} />}
+
+                {/* Stage button */}
+                <motion.button
+                  onClick={() => onStageChange(stage.key)}
+                  whileHover={{ backgroundColor: "rgba(255,255,255,0.04)" }}
+                  whileTap={{ scale: 0.97 }}
+                  transition={{ duration: 0.12 }}
+                  className={[
+                    "relative px-4 py-1.5 rounded-[var(--radius-button)] text-xs font-medium",
+                    "cursor-pointer transition-colors duration-150",
+                    isActive
+                      ? "bg-accent-dim text-accent border border-border-accent"
+                      : "text-text-muted hover:text-text-secondary border border-transparent",
+                  ].join(" ")}
+                >
+                  {stage.label}
+
+                  {/* Gate indicator */}
+                  {gateKey && <GateCircle complete={gateComplete} />}
+                </motion.button>
+              </div>
+            );
+          })}
+        </div>
+
+        {/* Running indicator */}
+        <div className="ml-auto flex items-center gap-2">
+          {isRunning && (
+            <div className="flex items-center gap-1.5 text-xs text-accent">
+              <span className="relative flex h-2 w-2">
+                <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-accent/40" />
+                <span className="relative inline-flex h-2 w-2 rounded-full bg-accent" />
+              </span>
+              <span className="text-text-secondary">Running</span>
             </div>
-          );
-        })}
-      </div>
-
-      {/* Running indicator */}
-      <div className="ml-auto flex items-center gap-2">
-        {isRunning && (
-          <div className="flex items-center gap-1.5 text-xs text-running">
-            <span className="w-1.5 h-1.5 rounded-full bg-running animate-pulse" />
-            Running
-          </div>
-        )}
+          )}
+        </div>
       </div>
     </nav>
   );

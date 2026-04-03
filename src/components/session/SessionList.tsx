@@ -11,13 +11,13 @@ export function SessionList({ sessions, onResume, onDelete }: SessionListProps) 
   if (sessions.length === 0) {
     return (
       <div className="flex items-center justify-center py-12">
-        <p className="text-xs text-text-muted">No previous sessions</p>
+        <p className="text-sm text-text-muted">No previous sessions</p>
       </div>
     );
   }
 
   return (
-    <div className="space-y-2">
+    <div className="flex flex-col gap-2">
       {sessions.map((session) => (
         <SessionCard
           key={session.id}

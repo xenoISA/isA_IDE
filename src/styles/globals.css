@@ -1,38 +1,76 @@
 @import "tailwindcss";
 
 @theme {
-  /* isA IDE color system — dark-first, warm neutrals */
-  --color-surface-0: #0a0a0b;
-  --color-surface-1: #111113;
-  --color-surface-2: #1a1a1e;
-  --color-surface-3: #232328;
-  --color-border: #2a2a30;
-  --color-border-subtle: #1f1f25;
-  --color-text-primary: #e8e8ec;
-  --color-text-secondary: #9393a0;
-  --color-text-muted: #5e5e6e;
+  /* ─── Ethereal Glass: Deep OLED + Zinc palette ────────────── */
+  --color-bg: #09090b;
+  --color-surface-0: #09090b;
+  --color-surface-1: #18181b;
+  --color-surface-2: #27272a;
+  --color-surface-3: #3f3f46;
 
-  /* Pipeline stage colors */
-  --color-stage-intent: #6366f1;
-  --color-stage-cdd: #8b5cf6;
-  --color-stage-tdd: #f59e0b;
-  --color-stage-code: #10b981;
-  --color-stage-ship: #06b6d4;
+  /* Borders: glass-like hairlines */
+  --color-border: rgba(255, 255, 255, 0.08);
+  --color-border-subtle: rgba(255, 255, 255, 0.04);
+  --color-border-accent: rgba(52, 211, 153, 0.3);
+
+  /* Text: zinc scale */
+  --color-text-primary: #fafafa;
+  --color-text-secondary: #a1a1aa;
+  --color-text-muted: #71717a;
+  --color-text-ghost: #52525b;
+
+  /* Single accent: Emerald (desaturated for taste) */
+  --color-accent: #34d399;
+  --color-accent-muted: #059669;
+  --color-accent-dim: rgba(52, 211, 153, 0.1);
+  --color-accent-glow: rgba(52, 211, 153, 0.06);
 
   /* Semantic */
-  --color-pass: #22c55e;
-  --color-fail: #ef4444;
-  --color-skip: #6b7280;
-  --color-running: #3b82f6;
-  --color-pending: #6b7280;
+  --color-pass: #34d399;
+  --color-fail: #f87171;
+  --color-warn: #fbbf24;
+  --color-info: #60a5fa;
 
-  /* Gate colors */
+  /* Pipeline: single accent at varying opacity — NOT different hues */
+  --color-stage-active: #34d399;
+  --color-stage-dim: rgba(52, 211, 153, 0.15);
+  --color-stage-muted: rgba(52, 211, 153, 0.06);
+
+  /* Gate states */
   --color-gate-locked: #3f3f46;
-  --color-gate-active: #f59e0b;
-  --color-gate-complete: #22c55e;
+  --color-gate-active: #fbbf24;
+  --color-gate-complete: #34d399;
+
+  /* Double-bezel tokens */
+  --radius-outer: 1.25rem;
+  --radius-inner: calc(1.25rem - 0.375rem);
+  --radius-pill: 9999px;
+  --radius-button: 0.75rem;
+
+  /* Ambient shadow (tinted to bg hue, wide spread) */
+  --shadow-ambient: 0 8px 32px -8px rgba(0, 0, 0, 0.5);
+  --shadow-card: 0 1px 2px rgba(0, 0, 0, 0.3), 0 0 0 1px rgba(255, 255, 255, 0.04);
+  --shadow-inner-highlight: inset 0 1px 0 rgba(255, 255, 255, 0.06);
+
+  /* Spacing scale */
+  --space-section: 2rem;
+  --space-card: 1.25rem;
+  --space-element: 0.75rem;
 }
 
-/* Minimal base resets */
+/* ─── Base ────────────────────────────────────────────────────── */
+@font-face {
+  font-family: 'Geist Sans';
+  src: local('Geist Sans'), local('GeistSans');
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Geist Mono';
+  src: local('Geist Mono'), local('GeistMono');
+  font-display: swap;
+}
+
 * {
   margin: 0;
   padding: 0;
@@ -40,150 +78,110 @@
 }
 
 body {
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
-  background: var(--color-surface-0);
+  font-family: 'Geist Sans', -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+  background: var(--color-bg);
   color: var(--color-text-primary);
   overflow: hidden;
-  height: 100vh;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
 #root {
-  height: 100vh;
+  min-height: 100dvh;
   display: flex;
   flex-direction: column;
 }
 
-/* Focus-visible — accessible keyboard navigation */
+/* ─── Focus: accessible keyboard nav ─────────────────────────── */
 :focus-visible {
-  outline: 2px solid var(--color-stage-intent);
+  outline: 2px solid var(--color-accent);
   outline-offset: 2px;
+  border-radius: 4px;
 }
 
-/* Panel transitions */
-.inspector-expanded,
-.inspector-collapsed {
-  transition: width 200ms ease-in-out;
-}
-
-/* Responsive: auto-hide inspector at narrow widths */
-@media (max-width: 900px) {
-  .inspector-expanded,
-  .inspector-collapsed {
-    display: none;
+/* ─── Reduced motion ─────────────────────────────────────────── */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
   }
 }
 
-/* ─── Markdown renderer styles ─────────────────────────────────── */
-.markdown-content .md-h1 {
-  font-size: 1.125rem;
-  font-weight: 600;
-  color: var(--color-text-primary);
-  margin-top: 1rem;
-  margin-bottom: 0.5rem;
+/* ─── Scrollbar: near-invisible ──────────────────────────────── */
+::-webkit-scrollbar { width: 4px; height: 4px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.08); border-radius: 4px; }
+::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.15); }
+
+/* ─── Double-bezel card primitive ────────────────────────────── */
+.bezel {
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: var(--radius-outer);
+  padding: 0.375rem;
 }
-.markdown-content .md-h2 {
-  font-size: 0.9375rem;
-  font-weight: 600;
-  color: var(--color-text-primary);
-  margin-top: 0.875rem;
-  margin-bottom: 0.375rem;
+.bezel-inner {
+  background: var(--color-surface-1);
+  border-radius: var(--radius-inner);
+  box-shadow: var(--shadow-inner-highlight);
 }
-.markdown-content .md-h3 {
-  font-size: 0.8125rem;
-  font-weight: 600;
-  color: var(--color-text-secondary);
-  margin-top: 0.75rem;
-  margin-bottom: 0.25rem;
+
+/* ─── Glass surface ──────────────────────────────────────────── */
+.glass {
+  background: rgba(24, 24, 27, 0.8);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04);
 }
-.markdown-content .md-h4 {
-  font-size: 0.75rem;
-  font-weight: 600;
-  color: var(--color-text-secondary);
-  margin-top: 0.5rem;
-  margin-bottom: 0.25rem;
+
+/* ─── Responsive: auto-hide inspector at narrow widths ───────── */
+@media (max-width: 900px) {
+  .inspector-panel { display: none; }
 }
-.markdown-content .md-p {
-  margin-bottom: 0.5rem;
+
+/* ─── Typography: monospace for data ─────────────────────────── */
+.font-mono, [data-mono] {
+  font-family: 'Geist Mono', ui-monospace, SFMono-Regular, "SF Mono", Menlo, monospace;
+  font-variant-numeric: tabular-nums;
 }
-.markdown-content .md-hr {
-  border: none;
-  border-top: 1px solid var(--color-border);
-  margin: 0.75rem 0;
-}
-.markdown-content .md-ul,
-.markdown-content .md-ol {
-  padding-left: 1.25rem;
-  margin-bottom: 0.5rem;
-}
-.markdown-content .md-ul {
-  list-style-type: disc;
-}
-.markdown-content .md-ol {
-  list-style-type: decimal;
-}
-.markdown-content .md-ul li,
-.markdown-content .md-ol li {
-  margin-bottom: 0.125rem;
-}
+
+/* ─── Markdown renderer ──────────────────────────────────────── */
+.markdown-content { font-size: 0.8125rem; line-height: 1.7; color: var(--color-text-secondary); }
+.markdown-content .md-h1 { font-size: 1rem; font-weight: 600; color: var(--color-text-primary); margin: 1.25rem 0 0.5rem; letter-spacing: -0.01em; }
+.markdown-content .md-h2 { font-size: 0.875rem; font-weight: 600; color: var(--color-text-primary); margin: 1rem 0 0.375rem; }
+.markdown-content .md-h3 { font-size: 0.8125rem; font-weight: 600; color: var(--color-text-secondary); margin: 0.75rem 0 0.25rem; }
+.markdown-content .md-h4 { font-size: 0.75rem; font-weight: 600; color: var(--color-text-secondary); margin: 0.5rem 0 0.25rem; }
+.markdown-content .md-p { margin-bottom: 0.625rem; }
+.markdown-content .md-hr { border: none; border-top: 1px solid var(--color-border); margin: 1rem 0; }
+.markdown-content .md-ul, .markdown-content .md-ol { padding-left: 1.25rem; margin-bottom: 0.625rem; }
+.markdown-content .md-ul { list-style-type: disc; }
+.markdown-content .md-ol { list-style-type: decimal; }
+.markdown-content .md-ul li, .markdown-content .md-ol li { margin-bottom: 0.25rem; }
 .markdown-content .inline-code {
-  font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, monospace;
-  font-size: 0.6875rem;
+  font-family: 'Geist Mono', ui-monospace, monospace;
+  font-size: 0.75rem;
   background: var(--color-surface-2);
   padding: 0.125rem 0.375rem;
   border-radius: 0.25rem;
-  color: var(--color-text-primary);
+  color: var(--color-accent);
 }
 .markdown-content .code-block {
-  font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, monospace;
-  font-size: 0.6875rem;
-  line-height: 1.5;
-  background: var(--color-surface-2);
-  padding: 0.75rem 1rem;
-  border-radius: 0.5rem;
-  margin: 0.5rem 0;
+  font-family: 'Geist Mono', ui-monospace, monospace;
+  font-size: 0.75rem;
+  line-height: 1.6;
+  background: var(--color-surface-0);
+  border: 1px solid var(--color-border);
+  padding: 1rem 1.25rem;
+  border-radius: var(--radius-button);
+  margin: 0.75rem 0;
   overflow-x: auto;
   color: var(--color-text-secondary);
 }
-.markdown-content .md-table {
-  width: 100%;
-  border-collapse: collapse;
-  margin: 0.5rem 0;
-  font-size: 0.6875rem;
-}
-.markdown-content .md-table th,
-.markdown-content .md-table td {
-  border: 1px solid var(--color-border);
-  padding: 0.375rem 0.5rem;
-  text-align: left;
-}
-.markdown-content .md-table th {
-  background: var(--color-surface-2);
-  font-weight: 600;
-  color: var(--color-text-primary);
-}
-.markdown-content .md-table td {
-  color: var(--color-text-secondary);
-}
-.markdown-content strong {
-  color: var(--color-text-primary);
-  font-weight: 600;
-}
-.markdown-content em {
-  font-style: italic;
-}
-
-/* Scrollbar — thin, unobtrusive */
-::-webkit-scrollbar {
-  width: 6px;
-  height: 6px;
-}
-::-webkit-scrollbar-track {
-  background: transparent;
-}
-::-webkit-scrollbar-thumb {
-  background: var(--color-border);
-  border-radius: 3px;
-}
-::-webkit-scrollbar-thumb:hover {
-  background: var(--color-text-muted);
-}
+.markdown-content .md-table { width: 100%; border-collapse: collapse; margin: 0.75rem 0; font-size: 0.75rem; }
+.markdown-content .md-table th, .markdown-content .md-table td { border: 1px solid var(--color-border); padding: 0.5rem 0.75rem; text-align: left; }
+.markdown-content .md-table th { background: var(--color-surface-2); font-weight: 500; color: var(--color-text-primary); }
+.markdown-content .md-table td { color: var(--color-text-secondary); }
+.markdown-content strong { color: var(--color-text-primary); font-weight: 500; }
+.markdown-content em { font-style: italic; }

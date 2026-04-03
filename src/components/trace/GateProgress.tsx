@@ -1,3 +1,4 @@
+import { motion } from "framer-motion";
 import type { Gates } from "@/lib/types";
 
 interface GateProgressProps {
@@ -10,55 +11,78 @@ const GATE_ITEMS: { key: keyof Gates; label: string; stage: string }[] = [
   { key: "deploy_success", label: "Deployed", stage: "Ship" },
 ];
 
+function CheckmarkIcon() {
+  return (
+    <svg viewBox="0 0 16 16" className="w-3 h-3">
+      <path
+        d="M13.5 4.5l-7 7L3 8"
+        stroke="currentColor"
+        strokeWidth="2"
+        fill="none"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </svg>
+  );
+}
+
 export function GateProgress({ gates }: GateProgressProps) {
   return (
-    <div className="space-y-3">
-      <h4 className="text-xs font-medium text-text-secondary">Pipeline Gates</h4>
-      {GATE_ITEMS.map((item, i) => {
-        const complete = gates[item.key];
-        return (
-          <div key={item.key}>
-            <div className="flex items-center gap-2">
-              {/* Gate circle */}
-              <div
-                className={`
-                  w-6 h-6 rounded-full flex items-center justify-center text-[10px] font-bold
-                  ${complete
-                    ? "bg-gate-complete text-surface-0"
-                    : "bg-surface-2 text-text-muted border border-border"
-                  }
-                `}
-              >
-                {complete ? "✓" : i + 1}
-              </div>
+    <div className="space-y-1">
+      <span className="text-xs uppercase tracking-widest text-text-muted">
+        Pipeline Gates
+      </span>
 
-              {/* Label */}
-              <div>
-                <p
-                  className={`text-xs font-medium ${
-                    complete ? "text-gate-complete" : "text-text-secondary"
+      <div className="flex flex-col">
+        {GATE_ITEMS.map((item, i) => {
+          const complete = gates[item.key];
+          const prevComplete = i > 0 ? gates[GATE_ITEMS[i - 1].key] : false;
+
+          return (
+            <div key={item.key}>
+              {/* Connector above (except first) */}
+              {i > 0 && (
+                <div className="flex justify-start pl-[11px]">
+                  <div
+                    className={`w-px h-3 ${
+                      prevComplete && complete
+                        ? "bg-accent"
+                        : "border-l border-dashed border-border"
+                    }`}
+                  />
+                </div>
+              )}
+
+              {/* Gate row */}
+              <div className="flex items-center gap-3">
+                <motion.div
+                  className={`w-6 h-6 rounded-full flex items-center justify-center text-[10px] font-semibold shrink-0 ${
+                    complete
+                      ? "bg-accent text-bg"
+                      : "border border-border text-text-muted"
                   }`}
+                  initial={false}
+                  animate={complete ? { scale: [1, 1.15, 1] } : {}}
+                  transition={{ duration: 0.3 }}
                 >
-                  {item.label}
-                </p>
-                <p className="text-[10px] text-text-muted">{item.stage}</p>
+                  {complete ? <CheckmarkIcon /> : i + 1}
+                </motion.div>
+
+                <div>
+                  <p
+                    className={`text-xs font-medium ${
+                      complete ? "text-accent" : "text-text-secondary"
+                    }`}
+                  >
+                    {item.label}
+                  </p>
+                  <p className="text-xs text-text-muted">{item.stage}</p>
+                </div>
               </div>
             </div>
-
-            {/* Connector */}
-            {i < GATE_ITEMS.length - 1 && (
-              <div
-                className="w-px h-3 ml-3"
-                style={{
-                  background: complete
-                    ? "var(--color-gate-complete)"
-                    : "var(--color-border)",
-                }}
-              />
-            )}
-          </div>
-        );
-      })}
+          );
+        })}
+      </div>
     </div>
   );
 }

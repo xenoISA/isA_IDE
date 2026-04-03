@@ -1,46 +1,28 @@
+import { motion } from "framer-motion";
+
 interface TeamBadgeProps {
   team: string;
   isActive: boolean;
 }
 
-const TEAM_CONFIG: Record<string, { label: string; color: string; icon: string }> = {
-  product_team: {
-    label: "Product Team",
-    color: "var(--color-stage-cdd)",
-    icon: "P",
-  },
-  dev_team: {
-    label: "Dev Team",
-    color: "var(--color-stage-tdd)",
-    icon: "D",
-  },
-  ops_team: {
-    label: "Ops Team",
-    color: "var(--color-stage-ship)",
-    icon: "O",
-  },
+const TEAM_LABELS: Record<string, string> = {
+  product_team: "Product Team",
+  dev_team: "Dev Team",
+  ops_team: "Ops Team",
 };
 
 export function TeamBadge({ team, isActive }: TeamBadgeProps) {
-  const config = TEAM_CONFIG[team] ?? {
-    label: team,
-    color: "var(--color-text-muted)",
-    icon: "?",
-  };
+  const label = TEAM_LABELS[team] ?? team;
 
   return (
     <div className="flex items-center gap-2">
-      <div
-        className="w-5 h-5 rounded flex items-center justify-center text-[10px] font-bold text-surface-0"
-        style={{ background: config.color }}
-      >
-        {config.icon}
-      </div>
-      <span className="text-xs text-text-secondary">{config.label}</span>
+      <span className="w-1.5 h-1.5 rounded-full bg-accent shrink-0" />
+      <span className="text-sm text-text-secondary">{label}</span>
       {isActive && (
-        <span
-          className="w-1.5 h-1.5 rounded-full animate-pulse"
-          style={{ background: config.color }}
+        <motion.span
+          className="w-1.5 h-1.5 rounded-full bg-accent"
+          animate={{ opacity: [1, 0.3, 1] }}
+          transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut" }}
         />
       )}
     </div>
