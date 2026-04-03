@@ -1,0 +1,70 @@
+@import "tailwindcss";
+
+@theme {
+  /* isA IDE color system — dark-first, warm neutrals */
+  --color-surface-0: #0a0a0b;
+  --color-surface-1: #111113;
+  --color-surface-2: #1a1a1e;
+  --color-surface-3: #232328;
+  --color-border: #2a2a30;
+  --color-border-subtle: #1f1f25;
+  --color-text-primary: #e8e8ec;
+  --color-text-secondary: #9393a0;
+  --color-text-muted: #5e5e6e;
+
+  /* Pipeline stage colors */
+  --color-stage-intent: #6366f1;
+  --color-stage-cdd: #8b5cf6;
+  --color-stage-tdd: #f59e0b;
+  --color-stage-code: #10b981;
+  --color-stage-ship: #06b6d4;
+
+  /* Semantic */
+  --color-pass: #22c55e;
+  --color-fail: #ef4444;
+  --color-skip: #6b7280;
+  --color-running: #3b82f6;
+  --color-pending: #6b7280;
+
+  /* Gate colors */
+  --color-gate-locked: #3f3f46;
+  --color-gate-active: #f59e0b;
+  --color-gate-complete: #22c55e;
+}
+
+/* Minimal base resets */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
+  background: var(--color-surface-0);
+  color: var(--color-text-primary);
+  overflow: hidden;
+  height: 100vh;
+}
+
+#root {
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Scrollbar — thin, unobtrusive */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: var(--color-border);
+  border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--color-text-muted);
+}
