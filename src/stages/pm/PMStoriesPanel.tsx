@@ -69,27 +69,27 @@ function deriveStatus(criteria: AcceptanceCriterion[]): {
     return {
       label: "No Criteria",
       badgeClass: "text-text-muted border-border",
-      borderClass: "border-l-2 border-l-border",
+      borderClass: "border-l-[3px] border-l-border",
     };
   }
   if (criteria.every((c) => c.status === "pass")) {
     return {
       label: "Complete",
       badgeClass: "text-pass border-pass/30",
-      borderClass: "border-l-2 border-l-accent",
+      borderClass: "border-l-[3px] border-l-accent",
     };
   }
   if (criteria.some((c) => c.status === "fail")) {
     return {
       label: "Needs Work",
       badgeClass: "text-fail border-fail/30",
-      borderClass: "border-l-2 border-l-fail",
+      borderClass: "border-l-[3px] border-l-fail",
     };
   }
   return {
     label: "In Progress",
     badgeClass: "text-warn border-warn/30",
-    borderClass: "border-l-2 border-l-warn",
+    borderClass: "border-l-[3px] border-l-warn",
   };
 }
 
@@ -134,10 +134,10 @@ export function PMStoriesPanel({ stories }: PMStoriesPanelProps) {
         return (
           <motion.div
             key={story.id}
-            className={`bezel ${status.borderClass} rounded-l-none`}
+            className="bezel overflow-hidden"
             variants={item}
           >
-            <div className="bezel-inner px-5 py-4 relative">
+            <div className={`bezel-inner px-5 py-4 relative ${status.borderClass}`}>
               {/* Header: ID pill + status badge (same row) */}
               <div className="flex items-center gap-3 mb-4">
                 <span className="font-mono text-xs text-text-muted bg-surface-2 px-2.5 py-1 rounded-full">

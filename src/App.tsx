@@ -266,7 +266,7 @@ export default function App() {
 
       {/* Main content */}
       <div className="flex flex-1 min-h-0">
-        <main className="flex-1 min-w-0 overflow-y-auto p-6">
+        <main className="flex-1 min-w-0 overflow-y-auto px-6 pt-8 pb-6">
           <div className="max-w-4xl">
             <AnimatePresence mode="wait">
               {persona ? (

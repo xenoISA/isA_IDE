@@ -59,7 +59,7 @@ export function PersonaNav({
 
   return (
     <nav className="mx-3 mt-2 mb-1">
-      <div className="glass rounded-[var(--radius-outer)] px-4 py-2 flex items-center gap-1">
+      <div className="glass rounded-[var(--radius-outer)] ring-1 ring-white/[0.06] px-4 py-2.5 flex items-center gap-1">
         {/* Logo */}
         <span className="text-sm font-medium tracking-wide text-text-secondary mr-5 select-none flex items-center gap-1.5">
           isA

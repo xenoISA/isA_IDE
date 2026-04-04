@@ -72,7 +72,7 @@ export function Inspector({
         </div>
       ) : (
         /* ─── Expanded panel ──────────────────────────────────── */
-        <div className="h-full bezel flex flex-col">
+        <div className="h-full bezel ring-1 ring-white/[0.08] flex flex-col">
           <div className="h-full bezel-inner flex flex-col overflow-hidden">
             {/* Tab bar */}
             <div className="flex border-b border-border">

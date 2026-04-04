@@ -15,7 +15,7 @@ const PERSONAS: { key: Persona; disabled: boolean }[] = [
 ];
 
 function PersonaIcon({ persona }: { persona: Persona }) {
-  const cls = "w-8 h-8";
+  const cls = "w-10 h-10";
 
   switch (persona) {
     case "pm":
@@ -81,9 +81,9 @@ export function PersonaPicker({ onSelect }: PersonaPickerProps) {
             </p>
           </div>
 
-          {/* Radial gradient backdrop */}
+          {/* Radial gradient backdrop — visible warm emerald glow */}
           <div className="relative">
-            <div className="absolute inset-0 -m-8 bg-[radial-gradient(ellipse_at_center,rgba(52,211,153,0.04)_0%,transparent_70%)] pointer-events-none" />
+            <div className="absolute -inset-20 bg-[radial-gradient(ellipse_at_center,rgba(52,211,153,0.10)_0%,rgba(52,211,153,0.03)_40%,transparent_70%)] pointer-events-none blur-2xl" />
 
           {/* 2x2 Grid */}
           <div className="relative grid grid-cols-2 gap-3">
@@ -106,8 +106,8 @@ export function PersonaPicker({ onSelect }: PersonaPickerProps) {
                     .join(" ")}
                 >
                   <div className={[
-                    "bezel-inner p-4 flex flex-col gap-3",
-                    !disabled && "bg-zinc-800/60",
+                    "bezel-inner p-5 flex flex-col gap-3",
+                    !disabled ? "bg-zinc-800/80" : "bg-zinc-900/60",
                   ].filter(Boolean).join(" ")}>
                     <div className="w-12 h-12 flex items-center justify-center text-text-secondary">
                       <PersonaIcon persona={key} />
