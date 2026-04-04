@@ -71,13 +71,13 @@ function GateLockIcon() {
 const container = {
   hidden: {},
   show: {
-    transition: { staggerChildren: 0.08 },
+    transition: { staggerChildren: 0.05 },
   },
 };
 
 const item = {
-  hidden: { opacity: 0, y: 8 },
-  show: { opacity: 1, y: 0, transition: { duration: 0.35, ease: "easeOut" as const } },
+  hidden: { opacity: 0.4, y: 4 },
+  show: { opacity: 1, y: 0, transition: { duration: 0.25, ease: "easeOut" as const } },
 };
 
 /* ─── Stat Card ─────────────────────────────────────────────── */

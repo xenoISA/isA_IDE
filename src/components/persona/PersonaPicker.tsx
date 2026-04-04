@@ -15,7 +15,7 @@ const PERSONAS: { key: Persona; disabled: boolean }[] = [
 ];
 
 function PersonaIcon({ persona }: { persona: Persona }) {
-  const cls = "w-10 h-10";
+  const cls = "w-8 h-8";
 
   switch (persona) {
     case "pm":
@@ -51,68 +51,86 @@ function PersonaIcon({ persona }: { persona: Persona }) {
   }
 }
 
+const cardStagger = {
+  hidden: {},
+  show: { transition: { staggerChildren: 0.08 } },
+};
+
+const cardItem = {
+  hidden: { opacity: 0, y: 12 },
+  show: { opacity: 1, y: 0, transition: { duration: 0.4, ease: "easeOut" as const } },
+};
+
 export function PersonaPicker({ onSelect }: PersonaPickerProps) {
   return createPortal(
     <AnimatePresence>
-      <div className="fixed inset-0 z-50 flex items-center justify-center">
-        {/* Backdrop */}
-        <motion.div
-          className="absolute inset-0 bg-black/70 backdrop-blur-xl"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
-        />
+      <div className="fixed inset-0 z-50 flex items-center justify-center bg-bg">
+        {/* Ambient glow — two layered gradients for depth */}
+        <div className="absolute inset-0 overflow-hidden pointer-events-none">
+          <div className="absolute top-1/3 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[400px] bg-[radial-gradient(ellipse,rgba(52,211,153,0.08)_0%,transparent_70%)] blur-3xl" />
+          <div className="absolute bottom-1/4 left-1/3 w-[300px] h-[300px] bg-[radial-gradient(circle,rgba(52,211,153,0.04)_0%,transparent_70%)] blur-2xl" />
+        </div>
 
         {/* Content */}
         <motion.div
-          className="relative z-10 w-full max-w-lg mx-4"
-          initial={{ opacity: 0, scale: 0.96 }}
-          animate={{ opacity: 1, scale: 1 }}
-          exit={{ opacity: 0, scale: 0.96 }}
-          transition={{ type: "spring", stiffness: 300, damping: 25 }}
+          className="relative z-10 w-full max-w-md mx-6"
+          initial={{ opacity: 0, y: 16 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
         >
-          {/* Header */}
-          <div className="text-center mb-2">
-            <h1 className="text-3xl font-semibold tracking-tight text-text-primary">
+          {/* Logo */}
+          <div className="flex items-center justify-center gap-2 mb-12">
+            <span className="text-lg font-semibold text-text-primary tracking-wide">isA</span>
+            <span className="text-text-muted/20">|</span>
+            <span className="text-lg font-normal text-text-muted tracking-wide">IDE</span>
+          </div>
+
+          {/* Heading */}
+          <div className="text-center mb-10">
+            <h1 className="text-2xl font-medium tracking-tight text-text-primary">
               How do you work?
             </h1>
-            <p className="mt-2 text-sm text-text-secondary leading-relaxed mb-10">
-              Choose your perspective. The same data, rendered in your language.
+            <p className="mt-3 text-sm text-text-muted leading-relaxed">
+              Same pipeline data, rendered for your role.
             </p>
           </div>
 
-          {/* Radial gradient backdrop — visible warm emerald glow */}
-          <div className="relative">
-            <div className="absolute -inset-20 bg-[radial-gradient(ellipse_at_center,rgba(52,211,153,0.10)_0%,rgba(52,211,153,0.03)_40%,transparent_70%)] pointer-events-none blur-2xl" />
-
-          {/* 2x2 Grid */}
-          <div className="relative grid grid-cols-2 gap-3">
+          {/* Persona cards — vertical stack, not grid */}
+          <motion.div
+            className="space-y-3"
+            variants={cardStagger}
+            initial="hidden"
+            animate="show"
+          >
             {PERSONAS.map(({ key, disabled }) => {
               const config = PERSONA_CONFIG[key];
 
               return (
                 <motion.button
                   key={key}
+                  variants={cardItem}
                   onClick={() => !disabled && onSelect(key)}
-                  whileHover={disabled ? undefined : { y: -2 }}
-                  whileTap={disabled ? undefined : { scale: 0.97 }}
-                  transition={{ duration: 0.15 }}
+                  whileHover={disabled ? undefined : { x: 4 }}
+                  whileTap={disabled ? undefined : { scale: 0.99 }}
                   className={[
-                    "bezel text-left cursor-pointer group",
-                    !disabled && "hover:ring-1 hover:ring-white/[0.08] hover:shadow-[0_8px_32px_-8px_rgba(52,211,153,0.12)]",
-                    disabled && "opacity-40 pointer-events-none",
-                  ]
-                    .filter(Boolean)
-                    .join(" ")}
+                    "w-full text-left cursor-pointer group",
+                    "rounded-[var(--radius-outer)] ring-1 transition-all duration-200",
+                    !disabled
+                      ? "ring-white/[0.08] hover:ring-accent/30 bg-surface-1 hover:bg-surface-2"
+                      : "ring-white/[0.04] bg-surface-1/40 opacity-40 pointer-events-none",
+                  ].join(" ")}
                 >
-                  <div className={[
-                    "bezel-inner p-5 flex flex-col gap-3",
-                    !disabled ? "bg-zinc-800/80" : "bg-zinc-900/60",
-                  ].filter(Boolean).join(" ")}>
-                    <div className="w-12 h-12 flex items-center justify-center text-text-secondary">
+                  <div className="flex items-center gap-4 px-5 py-4">
+                    {/* Icon */}
+                    <div className={[
+                      "w-11 h-11 rounded-[var(--radius-button)] flex items-center justify-center shrink-0",
+                      !disabled ? "bg-accent/10 text-accent" : "bg-surface-2 text-text-muted",
+                    ].join(" ")}>
                       <PersonaIcon persona={key} />
                     </div>
-                    <div>
+
+                    {/* Text */}
+                    <div className="flex-1 min-w-0">
                       <span className="text-sm font-medium text-text-primary block">
                         {config.label}
                       </span>
@@ -120,17 +138,22 @@ export function PersonaPicker({ onSelect }: PersonaPickerProps) {
                         {config.description}
                       </span>
                     </div>
-                    {disabled && (
-                      <span className="text-[10px] font-medium text-text-ghost uppercase tracking-wider">
-                        Coming soon
+
+                    {/* Arrow or "Soon" */}
+                    {disabled ? (
+                      <span className="text-[10px] font-medium text-text-ghost uppercase tracking-wider shrink-0">
+                        Soon
                       </span>
+                    ) : (
+                      <svg className="w-4 h-4 text-text-muted/40 group-hover:text-accent/60 transition-colors shrink-0" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                        <path d="M6 4l4 4-4 4" />
+                      </svg>
                     )}
                   </div>
                 </motion.button>
               );
             })}
-          </div>
-          </div>
+          </motion.div>
         </motion.div>
       </div>
     </AnimatePresence>,

@@ -98,13 +98,13 @@ function deriveStatus(criteria: AcceptanceCriterion[]): {
 const container = {
   hidden: {},
   show: {
-    transition: { staggerChildren: 0.06 },
+    transition: { staggerChildren: 0.04 },
   },
 };
 
 const item = {
-  hidden: { opacity: 0, y: 8 },
-  show: { opacity: 1, y: 0, transition: { duration: 0.35, ease: "easeOut" as const } },
+  hidden: { opacity: 0.4, y: 4 },
+  show: { opacity: 1, y: 0, transition: { duration: 0.2, ease: "easeOut" as const } },
 };
 
 /* ─── Component ──────────────────────────────────────────────── */

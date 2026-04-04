@@ -106,7 +106,8 @@ export function PersonaNav({
             </div>
           )}
 
-          <span className="text-xs font-medium text-text-muted/60 tracking-wider uppercase select-none">
+          <span className="text-text-muted/15 select-none">|</span>
+          <span className="text-[11px] font-medium text-text-muted/50 tracking-wider uppercase select-none">
             {config.label}
           </span>
         </div>
