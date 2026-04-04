@@ -1,7 +1,8 @@
 "use client";
 
 import { motion } from "framer-motion";
-import type { Gates, Phase } from "@/lib/types";
+import type { Gates, Persona, Phase } from "@/lib/types";
+import { PersonaSwitcher } from "@/components/persona/PersonaSwitcher";
 
 type Mode = "demo" | "live";
 
@@ -11,6 +12,8 @@ interface StatusBarProps {
   gates: Gates;
   mode?: Mode;
   onToggleMode?: () => void;
+  persona?: Persona;
+  onPersonaChange?: (p: Persona) => void;
 }
 
 const PHASE_LABELS: Record<Phase, string> = {
@@ -26,6 +29,8 @@ export function StatusBar({
   gates,
   mode = "demo",
   onToggleMode,
+  persona,
+  onPersonaChange,
 }: StatusBarProps) {
   const gateCount = [
     gates.cdd_complete,
@@ -53,7 +58,13 @@ export function StatusBar({
           </span>
         </motion.button>
 
-        <span className="w-px h-3 bg-border" />
+        {/* Persona switcher */}
+        {persona && onPersonaChange && (
+          <>
+            <PersonaSwitcher persona={persona} onChange={onPersonaChange} />
+            <span className="w-px h-3 bg-border" />
+          </>
+        )}
 
         {sessionId ? (
           <>
