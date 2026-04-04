@@ -1,7 +1,7 @@
 # isA IDE — Product Requirements Document
 
 > Product-centric CDD+TDD Agentic Coding IDE
-> Last updated: 2026-04-03
+> Last updated: 2026-04-04
 
 ## Vision
 
@@ -14,17 +14,71 @@ A lightweight desktop IDE (~30MB idle) where product people, non-developer opera
 - **Protocol**: REST + WebSocket to isA_Vibe on port 8240
 - **Differentiator**: No LSP, no file watchers, no local AI — all compute server-side
 
-## Core UX: Pipeline-First Navigation
+## Core UX: Persona-Aware Workspace
 
-Stages: **Intent → CDD → TDD → Code → Ship**
+Navigation is **persona-first**, not pipeline-first. Users choose their role (Product, Developer, Test, Ops) and see the same CDD+TDD data rendered in their language.
 
-Each stage is a visual panel, not a file editor. The pipeline is the primary navigation.
+| Persona | Sections |
+|---------|----------|
+| **Product** | Stories, Contracts, Progress, Decisions |
+| **Developer** | Architecture, Models, Code, Logic |
+| Test (Phase 2) | Coverage, Scenarios, Results, Edge Cases |
+| Ops (Phase 2) | Infrastructure, Deploy, Health, Config |
+
+"Intent" is shared across all personas — everyone enters their goal the same way.
+
+---
+
+## Feature: UX Polish Pass — Breathing Room, Hierarchy, Readability
+
+**Status**: Ready for dev
+**Priority**: P1-High
+**Epic**: #24
+**Why**: Screenshot audit revealed flat surfaces, no breathing room, text running edge-to-edge, hero stats at body-text size, and monotonous card styling. The Ethereal Glass dark theme needs elevation and spacing to work.
+
+### Requirements
+
+- Global content max-width (max-w-4xl) on all persona panels
+- Floating nav bar (mx-3 mt-2) detached from viewport edges
+- Inspector width reduced to 240px default
+- Section transitions with framer-motion fade+y
+- PersonaPicker: larger icons (40px+), subtle ambient gradient, brighter active cards
+- Intent: vertical centering, pill-shaped quick actions, smaller Go button
+- PM Progress: text-4xl hero stats, progress visualization, wider gate timeline
+- PM Stories: status-colored left borders, larger criteria icons
+- PM Contracts: max-w-[65ch] on text, visual separators between rules
+- Dev Architecture: collapsible sections or tabs for L3/L6
+- Dev Logic: vertical test stacking in matrix, coverage stat at top
+
+### Acceptance Criteria
+
+- [ ] No text line exceeds 75ch on any panel
+- [ ] Nav bar has visible margin from viewport edges
+- [ ] Hero stats on PM Progress are text-3xl+ and visually dominant
+- [ ] Story cards have colored left border by status (emerald/amber/red)
+- [ ] Architecture panel has collapsible or tabbed L3/L6 sections
+- [ ] Test pills in verification matrix display one-per-line
+- [ ] Section transitions animate smoothly (fade + y offset)
+- [ ] Inspector defaults to 240px width
+
+### Stories
+
+| Issue | Title | Priority |
+|-------|-------|----------|
+| #23 | Global layout — nav, spacing, inspector, transitions | P1 |
+| #16 | PersonaPicker — depth, hierarchy, warmth | P1 |
+| #17 | Intent page — breathing room, CTA sizing | P1 |
+| #18 | PM Progress — hero stats, progress visualization | P1 |
+| #19 | PM Stories — status differentiation, breathing room | P2 |
+| #20 | PM Contracts — text width, visual separation | P2 |
+| #21 | Dev Architecture — content chunking, navigation | P1 |
+| #22 | Dev Logic — verification matrix readability | P2 |
 
 ---
 
 ## Feature: Demo Mode with Mock Orchestration
 
-**Status**: Ready for dev
+**Status**: Implemented (v0.1.0)
 **Priority**: P1-High
 **Why**: Enable UX iteration and stakeholder demos without requiring live isA_Vibe backend
 
@@ -61,7 +115,7 @@ Each stage is a visual panel, not a file editor. The pipeline is the primary nav
 
 ## Feature: UI Polish & Missing Pieces
 
-**Status**: Ready for dev
+**Status**: Implemented (v0.1.0)
 **Priority**: P1-High
 **Why**: Complete the IDE shell before wiring to real backend
 
@@ -138,8 +192,9 @@ Each stage is a visual panel, not a file editor. The pipeline is the primary nav
 
 ## Roadmap
 
-| Phase | Features | Priority |
-|-------|----------|----------|
-| **Phase 1** (current) | Scaffold ✓, Demo Mode, UI Polish | P1 |
-| **Phase 2** | Live API, Code Stage (Monaco), Ship Stage | P1-P2 |
-| **Phase 3** | Orch integration, Offline mode, Collaboration | P2-P3 |
+| Phase | Features | Status |
+|-------|----------|--------|
+| **Phase 1A** | Scaffold, Demo Mode, UI Shell, Persona System | Done |
+| **Phase 1B** (current) | UX Polish — breathing room, hierarchy, readability (#24) | In Progress |
+| **Phase 2** | Live Vibe API, Test + Ops personas, Monaco editor | Planned |
+| **Phase 3** | Orch integration, Offline mode, Collaboration | Planned |
