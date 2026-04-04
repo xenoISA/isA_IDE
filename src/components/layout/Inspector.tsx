@@ -52,7 +52,7 @@ export function Inspector({
   return (
     <motion.aside
       className="flex-shrink-0 inspector-panel"
-      animate={{ width: collapsed ? 32 : 288 }}
+      animate={{ width: collapsed ? 32 : 240 }}
       transition={{ type: "spring", stiffness: 400, damping: 32 }}
     >
       {collapsed ? (

@@ -29,7 +29,7 @@ const TEAM_LABELS: Record<string, string> = {
 
 function GateCheckIcon() {
   return (
-    <svg viewBox="0 0 16 16" className="w-3 h-3">
+    <svg viewBox="0 0 16 16" className="w-3.5 h-3.5">
       <path
         d="M13 4.5l-6.5 7L3 8"
         stroke="currentColor"
@@ -44,7 +44,7 @@ function GateCheckIcon() {
 
 function GateLockIcon() {
   return (
-    <svg viewBox="0 0 16 16" className="w-3 h-3">
+    <svg viewBox="0 0 16 16" className="w-3.5 h-3.5">
       <rect
         x="4"
         y="7"
@@ -80,6 +80,41 @@ const item = {
   show: { opacity: 1, y: 0, transition: { duration: 0.35, ease: "easeOut" as const } },
 };
 
+/* ─── Stat Card ─────────────────────────────────────────────── */
+
+function StatCard({
+  value,
+  total,
+  label,
+}: {
+  value: number;
+  total: number;
+  label: string;
+}) {
+  const ratio = total > 0 ? value / total : 0;
+
+  return (
+    <motion.div variants={item}>
+      <p className="font-mono tabular-nums tracking-tight">
+        <span className="text-5xl font-semibold text-text-primary">{value}</span>
+        <span className="text-lg text-text-muted"> of {total}</span>
+      </p>
+      <p className="text-xs uppercase tracking-widest text-text-muted mt-2">
+        {label}
+      </p>
+      {/* Progress bar */}
+      <div className="mt-3 h-1 rounded-full bg-surface-2 overflow-hidden">
+        <motion.div
+          className="h-full rounded-full bg-accent"
+          initial={{ width: 0 }}
+          animate={{ width: `${ratio * 100}%` }}
+          transition={{ duration: 0.6, ease: "easeOut", delay: 0.2 }}
+        />
+      </div>
+    </motion.div>
+  );
+}
+
 /* ─── Component ──────────────────────────────────────────────── */
 
 export function PMProgressPanel({
@@ -113,68 +148,59 @@ export function PMProgressPanel({
   }
 
   return (
-    <motion.div variants={container} initial="hidden" animate="show">
+    <motion.div
+      className="max-w-3xl space-y-10"
+      variants={container}
+      initial="hidden"
+      animate="show"
+    >
       {/* ─── Hero stats row ─────────────────────────────────── */}
-      <div className="grid grid-cols-3 gap-8 mb-10">
-        <motion.div variants={item}>
-          <p className="font-mono text-3xl text-text-primary tracking-tight">
-            {passingCriteria}
-            <span className="text-text-ghost text-lg"> of {totalCriteria}</span>
-          </p>
-          <p className="text-xs text-text-muted mt-1">
-            Acceptance Criteria Passing
-          </p>
-        </motion.div>
-
-        <motion.div variants={item}>
-          <p className="font-mono text-3xl text-text-primary tracking-tight">
-            {verifiedRules}
-            <span className="text-text-ghost text-lg"> of {totalRules}</span>
-          </p>
-          <p className="text-xs text-text-muted mt-1">
-            Business Rules Verified
-          </p>
-        </motion.div>
-
-        <motion.div variants={item}>
-          <p className="font-mono text-3xl text-text-primary tracking-tight">
-            {completedGates}
-            <span className="text-text-ghost text-lg"> of {totalGates}</span>
-          </p>
-          <p className="text-xs text-text-muted mt-1">
-            Pipeline Gates Cleared
-          </p>
-        </motion.div>
+      <div className="grid grid-cols-3 gap-8">
+        <StatCard
+          value={passingCriteria}
+          total={totalCriteria}
+          label="Acceptance Criteria Passing"
+        />
+        <StatCard
+          value={verifiedRules}
+          total={totalRules}
+          label="Business Rules Verified"
+        />
+        <StatCard
+          value={completedGates}
+          total={totalGates}
+          label="Pipeline Gates Cleared"
+        />
       </div>
 
       {/* ─── Gate timeline (horizontal) ─────────────────────── */}
-      <motion.div variants={item} className="mb-10">
-        <p className="text-xs uppercase tracking-widest text-text-muted mb-3">
+      <motion.div variants={item}>
+        <p className="text-xs uppercase tracking-widest text-text-muted mb-4">
           Gate Progress
         </p>
-        <div className="flex items-center gap-0">
+        <div className="flex items-start gap-0">
           {GATE_ITEMS.map((gate, i) => {
             const complete = gates[gate.key];
             return (
-              <div key={gate.key} className="flex items-center">
+              <div key={gate.key} className="flex items-start">
                 {/* Connector line (except before first) */}
                 {i > 0 && (
                   <div
-                    className={`w-12 h-px ${
+                    className={`w-16 h-0.5 mt-4 ${
                       gates[GATE_ITEMS[i - 1].key] && complete
                         ? "bg-accent"
-                        : "border-t border-dashed border-border"
+                        : "border-t-2 border-dashed border-border"
                     }`}
                   />
                 )}
 
                 {/* Gate node */}
-                <div className="flex flex-col items-center gap-1.5">
+                <div className="flex flex-col items-center gap-2">
                   <motion.div
-                    className={`w-7 h-7 rounded-full flex items-center justify-center shrink-0 ${
+                    className={`w-8 h-8 rounded-full flex items-center justify-center shrink-0 ${
                       complete
                         ? "bg-accent text-bg"
-                        : "border border-border text-text-muted"
+                        : "border-2 border-border text-text-muted"
                     }`}
                     initial={false}
                     animate={complete ? { scale: [1, 1.12, 1] } : {}}
@@ -183,7 +209,7 @@ export function PMProgressPanel({
                     {complete ? <GateCheckIcon /> : <GateLockIcon />}
                   </motion.div>
                   <span
-                    className={`text-[11px] whitespace-nowrap ${
+                    className={`text-xs whitespace-nowrap ${
                       complete
                         ? "text-accent font-medium"
                         : "text-text-muted"
@@ -201,18 +227,20 @@ export function PMProgressPanel({
       {/* ─── Handoff notes ──────────────────────────────────── */}
       {hasNotes && (
         <motion.div variants={item}>
-          <p className="text-xs uppercase tracking-widest text-text-muted mb-3">
+          <p className="text-xs uppercase tracking-widest text-text-muted mb-4">
             Team Notes
           </p>
-          <div className="space-y-4">
+          <div className="space-y-3">
             {Object.entries(handoffNotes).map(([team, note]) => (
-              <div key={team}>
-                <p className="text-[11px] font-medium text-text-muted mb-1">
-                  {TEAM_LABELS[team] || team}
-                </p>
-                <p className="text-xs text-text-secondary leading-relaxed">
-                  {note}
-                </p>
+              <div key={team} className="bezel">
+                <div className="bezel-inner px-5 py-4">
+                  <span className="inline-block text-[11px] font-medium text-accent bg-accent-dim rounded-[--radius-button] px-2.5 py-0.5 mb-2">
+                    {TEAM_LABELS[team] || team}
+                  </span>
+                  <p className="text-sm text-text-secondary leading-relaxed">
+                    {note}
+                  </p>
+                </div>
               </div>
             ))}
           </div>

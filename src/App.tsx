@@ -1,4 +1,5 @@
 import { useState, useCallback, useRef } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 import type { OrchestrationEvent } from "./lib/types";
 import { emptySharedState, PERSONA_CONFIG } from "./lib/types";
 import { applyEvent, eventToSection } from "./lib/events";
@@ -266,7 +267,21 @@ export default function App() {
       {/* Main content */}
       <div className="flex flex-1 min-h-0">
         <main className="flex-1 min-w-0 overflow-y-auto p-6">
-          {persona ? renderSection() : null}
+          <div className="max-w-4xl">
+            <AnimatePresence mode="wait">
+              {persona ? (
+                <motion.div
+                  key={activeSection}
+                  initial={{ opacity: 0, y: 6 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -4 }}
+                  transition={{ duration: 0.25, ease: [0.22, 1, 0.36, 1] }}
+                >
+                  {renderSection()}
+                </motion.div>
+              ) : null}
+            </AnimatePresence>
+          </div>
         </main>
 
         {persona && (

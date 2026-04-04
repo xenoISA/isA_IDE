@@ -54,53 +54,63 @@ export function PMContractsPanel({ rules }: PMContractsPanelProps) {
   }
 
   const verifiedCount = rules.filter((r) => r.status === "verified").length;
+  const ratio = rules.length > 0 ? verifiedCount / rules.length : 0;
 
   return (
-    <div>
-      {/* Header */}
-      <div className="flex items-baseline justify-between mb-5">
-        <h2 className="text-sm font-semibold text-text-primary tracking-tight">
+    <div className="max-w-3xl">
+      {/* Header + summary */}
+      <div className="mb-6">
+        <h2 className="text-sm font-semibold text-text-primary tracking-tight mb-2">
           Business Rules
         </h2>
-        <span className="font-mono text-xs text-text-muted">
-          {verifiedCount} of {rules.length} rules verified
-        </span>
+        <p className="text-lg font-mono tabular-nums text-text-primary tracking-tight">
+          {verifiedCount}
+          <span className="text-text-muted"> of {rules.length} rules verified</span>
+        </p>
+        {/* Progress bar */}
+        <div className="mt-3 h-1 rounded-full bg-surface-2 overflow-hidden max-w-xs">
+          <motion.div
+            className="h-full rounded-full bg-accent"
+            initial={{ width: 0 }}
+            animate={{ width: `${ratio * 100}%` }}
+            transition={{ duration: 0.6, ease: "easeOut", delay: 0.2 }}
+          />
+        </div>
       </div>
 
       {/* Rule list */}
-      <motion.div variants={container} initial="hidden" animate="show">
-        {rules.map((rule, idx) => {
+      <motion.div
+        className="space-y-3"
+        variants={container}
+        initial="hidden"
+        animate="show"
+      >
+        {rules.map((rule) => {
           const badge = STATUS_CONFIG[rule.status];
 
           return (
-            <motion.div
-              key={rule.id}
-              variants={item}
-              className={`flex items-start justify-between gap-4 py-3.5 px-1 ${
-                idx < rules.length - 1 ? "border-b border-border" : ""
-              }`}
-            >
-              {/* Left: ID + content */}
-              <div className="flex-1 min-w-0">
-                <div className="flex items-center gap-2.5 mb-1">
-                  <span className="font-mono text-[11px] text-text-ghost shrink-0">
+            <motion.div key={rule.id} variants={item} className="bezel">
+              <div className="bezel-inner px-5 py-4">
+                {/* Header row: ID pill + title + status badge */}
+                <div className="flex items-center gap-2.5 mb-2">
+                  <span className="bg-accent-dim text-accent rounded-[--radius-button] px-2 py-0.5 text-xs font-mono shrink-0">
                     {rule.id}
                   </span>
-                  <span className="text-sm font-medium text-text-primary truncate">
+                  <span className="text-base font-medium text-text-primary truncate">
                     {rule.title}
                   </span>
+                  <span
+                    className={`text-xs font-medium px-2.5 py-0.5 rounded-full border shrink-0 ml-auto ${badge.className}`}
+                  >
+                    {badge.label}
+                  </span>
                 </div>
-                <p className="text-xs text-text-secondary leading-relaxed">
+
+                {/* Description */}
+                <p className="text-sm text-text-secondary leading-relaxed max-w-[65ch]">
                   {rule.description}
                 </p>
               </div>
-
-              {/* Right: status badge */}
-              <span
-                className={`text-[11px] font-medium px-2.5 py-0.5 rounded-full border shrink-0 ${badge.className}`}
-              >
-                {badge.label}
-              </span>
             </motion.div>
           );
         })}

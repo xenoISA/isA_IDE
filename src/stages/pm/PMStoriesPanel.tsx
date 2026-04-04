@@ -9,7 +9,7 @@ interface PMStoriesPanelProps {
 
 function CheckIcon() {
   return (
-    <svg viewBox="0 0 16 16" className="w-3.5 h-3.5 text-pass shrink-0">
+    <svg viewBox="0 0 16 16" className="w-4 h-4 text-pass shrink-0">
       <path
         d="M13 4.5l-6.5 7L3 8"
         stroke="currentColor"
@@ -24,7 +24,7 @@ function CheckIcon() {
 
 function FailIcon() {
   return (
-    <svg viewBox="0 0 16 16" className="w-3.5 h-3.5 text-fail shrink-0">
+    <svg viewBox="0 0 16 16" className="w-4 h-4 text-fail shrink-0">
       <path
         d="M4.5 4.5l7 7M11.5 4.5l-7 7"
         stroke="currentColor"
@@ -39,7 +39,7 @@ function FailIcon() {
 
 function PendingIcon() {
   return (
-    <svg viewBox="0 0 16 16" className="w-3.5 h-3.5 text-text-ghost shrink-0">
+    <svg viewBox="0 0 16 16" className="w-4 h-4 text-text-ghost shrink-0">
       <circle
         cx="8"
         cy="8"
@@ -62,18 +62,35 @@ function criterionIcon(status: AcceptanceCriterion["status"]) {
 
 function deriveStatus(criteria: AcceptanceCriterion[]): {
   label: string;
-  className: string;
+  badgeClass: string;
+  borderClass: string;
 } {
   if (criteria.length === 0) {
-    return { label: "No Criteria", className: "text-text-muted border-border" };
+    return {
+      label: "No Criteria",
+      badgeClass: "text-text-muted border-border",
+      borderClass: "border-l-2 border-l-border",
+    };
   }
   if (criteria.every((c) => c.status === "pass")) {
-    return { label: "Complete", className: "text-pass border-pass/30" };
+    return {
+      label: "Complete",
+      badgeClass: "text-pass border-pass/30",
+      borderClass: "border-l-2 border-l-accent",
+    };
   }
   if (criteria.some((c) => c.status === "fail")) {
-    return { label: "Needs Work", className: "text-fail border-fail/30" };
+    return {
+      label: "Needs Work",
+      badgeClass: "text-fail border-fail/30",
+      borderClass: "border-l-2 border-l-fail",
+    };
   }
-  return { label: "In Progress", className: "text-warn border-warn/30" };
+  return {
+    label: "In Progress",
+    badgeClass: "text-warn border-warn/30",
+    borderClass: "border-l-2 border-l-warn",
+  };
 }
 
 /* ─── Stagger animation ─────────────────────────────────────── */
@@ -106,7 +123,7 @@ export function PMStoriesPanel({ stories }: PMStoriesPanelProps) {
 
   return (
     <motion.div
-      className="space-y-3"
+      className="max-w-3xl space-y-3"
       variants={container}
       initial="hidden"
       animate="show"
@@ -115,45 +132,54 @@ export function PMStoriesPanel({ stories }: PMStoriesPanelProps) {
         const status = deriveStatus(story.criteria);
 
         return (
-          <motion.div key={story.id} className="bezel" variants={item}>
+          <motion.div
+            key={story.id}
+            className={`bezel ${status.borderClass} rounded-l-none`}
+            variants={item}
+          >
             <div className="bezel-inner px-5 py-4 relative">
-              {/* Header: ID pill + status badge */}
-              <div className="flex items-center justify-between mb-3">
-                <span className="font-mono text-[11px] text-text-muted bg-surface-2 px-2 py-0.5 rounded-full">
+              {/* Header: ID pill + status badge (same row) */}
+              <div className="flex items-center gap-3 mb-4">
+                <span className="font-mono text-xs text-text-muted bg-surface-2 px-2.5 py-1 rounded-full">
                   {story.id}
                 </span>
                 <span
-                  className={`text-[11px] font-medium px-2.5 py-0.5 rounded-full border ${status.className}`}
+                  className={`text-xs font-medium px-2.5 py-1 rounded-full border ${status.badgeClass}`}
                 >
                   {status.label}
                 </span>
               </div>
 
-              {/* Story sentence */}
-              <p className="text-sm text-text-secondary leading-relaxed mb-4">
-                As{" "}
-                <span className="text-text-primary font-medium">
-                  {story.as}
-                </span>
-                , I want{" "}
-                <span className="text-text-primary font-medium">
-                  {story.want}
-                </span>
-                , so that{" "}
-                <span className="text-text-primary font-medium">
-                  {story.soThat}
-                </span>
-                .
-              </p>
+              {/* Story sentence — structured three-line layout */}
+              <div className="mb-4 space-y-1">
+                <p className="text-sm text-text-secondary leading-relaxed">
+                  <span className="text-text-muted">As</span>{" "}
+                  <span className="font-medium text-text-primary">
+                    {story.as}
+                  </span>
+                </p>
+                <p className="text-sm text-text-secondary leading-relaxed">
+                  <span className="text-text-muted">I want</span>{" "}
+                  <span className="font-medium text-text-primary">
+                    {story.want}
+                  </span>
+                </p>
+                <p className="text-sm text-text-secondary leading-relaxed">
+                  <span className="text-text-muted">So that</span>{" "}
+                  <span className="font-medium text-text-primary">
+                    {story.soThat}
+                  </span>
+                </p>
+              </div>
 
               {/* Acceptance criteria checklist */}
               {story.criteria.length > 0 && (
-                <div className="space-y-2">
+                <div className="space-y-2.5">
                   {story.criteria.map((criterion, idx) => (
                     <div key={idx} className="flex items-start gap-2.5">
                       <span className="mt-0.5">{criterionIcon(criterion.status)}</span>
                       <span
-                        className={`text-xs leading-relaxed ${
+                        className={`text-sm leading-relaxed ${
                           criterion.status === "pass"
                             ? "text-text-secondary"
                             : criterion.status === "fail"

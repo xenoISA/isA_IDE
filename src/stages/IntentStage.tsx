@@ -96,7 +96,10 @@ export function IntentStage({
 
   return (
     <motion.div
-      className="max-w-2xl pt-16"
+      className={[
+        "max-w-xl mx-auto",
+        sessions.length === 0 ? "flex flex-col justify-center min-h-[70vh]" : "pt-8",
+      ].join(" ")}
       initial={{ opacity: 0, y: 8 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
@@ -110,7 +113,7 @@ export function IntentStage({
       </p>
 
       {/* Double-bezel textarea */}
-      <div className="bezel">
+      <div className="bezel ring-1 ring-white/[0.06]">
         <div className="bezel-inner p-1">
           <textarea
             value={prompt}
@@ -120,7 +123,7 @@ export function IntentStage({
             disabled={isRunning}
             rows={5}
             className="
-              w-full p-3 rounded-[calc(var(--radius-inner)-0.25rem)]
+              w-full px-3 py-4 rounded-[calc(var(--radius-inner)-0.25rem)]
               bg-surface-0 border-none
               text-text-primary text-sm leading-relaxed
               placeholder:text-text-muted/50
@@ -159,7 +162,7 @@ export function IntentStage({
         whileTap={{ scale: 0.97 }}
         whileHover={{ y: -1 }}
         className="
-          mt-4 w-full py-2.5 rounded-[--radius-button]
+          mt-4 max-w-xs mx-auto w-full py-2.5 rounded-[--radius-pill]
           bg-accent text-bg text-sm font-medium
           hover:brightness-110
           disabled:opacity-40 disabled:cursor-not-allowed
@@ -175,7 +178,7 @@ export function IntentStage({
         ) : (
           <span className="flex items-center justify-center gap-2">
             Go
-            <kbd className="text-[10px] font-mono bg-bg/20 px-1.5 py-0.5 rounded">
+            <kbd className="text-[10px] font-mono bg-surface-2 rounded px-1.5 py-0.5 text-text-muted">
               Cmd+Enter
             </kbd>
           </span>
@@ -198,7 +201,7 @@ export function IntentStage({
 
       {/* Quick actions */}
       <div className="mt-10">
-        <h3 className="text-xs font-medium text-text-muted mb-3 tracking-wide uppercase">
+        <h3 className="text-xs font-medium text-text-muted border-b border-border pb-2 mb-3">
           Quick Actions
         </h3>
         <div className="flex flex-wrap gap-2">
@@ -210,10 +213,10 @@ export function IntentStage({
               whileTap={{ scale: 0.97 }}
               whileHover={{ y: -1 }}
               className="
-                px-3 py-1.5 rounded-[--radius-button]
-                bg-transparent border border-transparent
+                border border-border rounded-[--radius-pill] px-4 py-2
+                bg-transparent
                 text-xs text-text-secondary
-                hover:border-border hover:bg-surface-1
+                hover:bg-surface-1
                 disabled:opacity-40
                 transition-colors cursor-pointer
               "
@@ -227,7 +230,7 @@ export function IntentStage({
       {/* Sessions -- compact list, always visible if they exist */}
       {sessions.length > 0 && (
         <div className="mt-8">
-          <h3 className="text-xs font-medium text-text-muted mb-3 tracking-wide uppercase">
+          <h3 className="text-xs font-medium text-text-muted border-b border-border pb-2 mb-3">
             Recent Sessions
           </h3>
           <div className="space-y-1">

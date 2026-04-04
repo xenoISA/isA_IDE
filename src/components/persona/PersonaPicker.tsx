@@ -15,7 +15,7 @@ const PERSONAS: { key: Persona; disabled: boolean }[] = [
 ];
 
 function PersonaIcon({ persona }: { persona: Persona }) {
-  const cls = "w-6 h-6";
+  const cls = "w-8 h-8";
 
   switch (persona) {
     case "pm":
@@ -72,17 +72,21 @@ export function PersonaPicker({ onSelect }: PersonaPickerProps) {
           transition={{ type: "spring", stiffness: 300, damping: 25 }}
         >
           {/* Header */}
-          <div className="text-center mb-8">
-            <h1 className="text-2xl font-semibold tracking-tight text-text-primary">
+          <div className="text-center mb-2">
+            <h1 className="text-3xl font-semibold tracking-tight text-text-primary">
               How do you work?
             </h1>
-            <p className="mt-2 text-sm text-text-secondary leading-relaxed">
+            <p className="mt-2 text-sm text-text-secondary leading-relaxed mb-10">
               Choose your perspective. The same data, rendered in your language.
             </p>
           </div>
 
+          {/* Radial gradient backdrop */}
+          <div className="relative">
+            <div className="absolute inset-0 -m-8 bg-[radial-gradient(ellipse_at_center,rgba(52,211,153,0.04)_0%,transparent_70%)] pointer-events-none" />
+
           {/* 2x2 Grid */}
-          <div className="grid grid-cols-2 gap-3">
+          <div className="relative grid grid-cols-2 gap-3">
             {PERSONAS.map(({ key, disabled }) => {
               const config = PERSONA_CONFIG[key];
 
@@ -94,14 +98,18 @@ export function PersonaPicker({ onSelect }: PersonaPickerProps) {
                   whileTap={disabled ? undefined : { scale: 0.97 }}
                   transition={{ duration: 0.15 }}
                   className={[
-                    "bezel text-left cursor-pointer",
+                    "bezel text-left cursor-pointer group",
+                    !disabled && "hover:ring-1 hover:ring-white/[0.08] hover:shadow-[0_8px_32px_-8px_rgba(52,211,153,0.12)]",
                     disabled && "opacity-40 pointer-events-none",
                   ]
                     .filter(Boolean)
                     .join(" ")}
                 >
-                  <div className="bezel-inner p-4 flex flex-col gap-3">
-                    <div className="text-text-secondary">
+                  <div className={[
+                    "bezel-inner p-4 flex flex-col gap-3",
+                    !disabled && "bg-zinc-800/60",
+                  ].filter(Boolean).join(" ")}>
+                    <div className="w-12 h-12 flex items-center justify-center text-text-secondary">
                       <PersonaIcon persona={key} />
                     </div>
                     <div>
@@ -121,6 +129,7 @@ export function PersonaPicker({ onSelect }: PersonaPickerProps) {
                 </motion.button>
               );
             })}
+          </div>
           </div>
         </motion.div>
       </div>
