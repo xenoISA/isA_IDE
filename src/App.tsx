@@ -35,8 +35,17 @@ type Mode = "demo" | "live";
 type PendingGate = "cdd_complete" | "tests_pass" | "deploy_success" | null;
 
 export default function App() {
-  const { persona, setPersona } = usePersona();
+  const { persona, setPersona: setPersonaRaw } = usePersona();
   const [activeSection, setActiveSection] = useState("intent");
+
+  // Reset section to first persona section when persona changes
+  const setPersona = useCallback(
+    (p: Parameters<typeof setPersonaRaw>[0]) => {
+      setPersonaRaw(p);
+      setActiveSection(PERSONA_CONFIG[p].sections[0].key);
+    },
+    [setPersonaRaw]
+  );
   const [sharedState, setSharedState] = useState(emptySharedState);
   const [events, setEvents] = useState<OrchestrationEvent[]>([]);
   const [isRunning, setIsRunning] = useState(false);
