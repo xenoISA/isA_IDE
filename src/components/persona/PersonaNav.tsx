@@ -10,7 +10,6 @@ interface PersonaNavProps {
   isRunning: boolean;
 }
 
-/** Maps section keys to their relevant gate indicator */
 const SECTION_GATE_MAP: Record<string, keyof Gates> = {
   contracts: "cdd_complete",
   results: "tests_pass",
@@ -22,7 +21,7 @@ function GateDot({ complete }: { complete: boolean }) {
       width="8"
       height="8"
       viewBox="0 0 8 8"
-      className="absolute -top-1 -right-1"
+      className="absolute -top-0.5 -right-0.5"
       aria-hidden="true"
     >
       <circle
@@ -58,17 +57,17 @@ export function PersonaNav({
   ];
 
   return (
-    <nav className="mx-3 mt-2 mb-1">
-      <div className="glass rounded-[var(--radius-outer)] ring-1 ring-white/[0.06] px-4 py-2.5 flex items-center gap-1">
+    <nav className="mx-4 mt-3 mb-2">
+      <div className="glass rounded-[var(--radius-outer)] ring-1 ring-white/[0.08] px-5 py-3 flex items-center">
         {/* Logo */}
-        <span className="text-sm font-medium tracking-wide text-text-secondary mr-5 select-none flex items-center gap-1.5">
+        <span className="text-sm font-semibold tracking-wide text-text-primary mr-6 select-none flex items-center gap-2">
           isA
-          <span className="text-border text-text-muted/30 font-light select-none">|</span>
-          <span className="text-text-muted">IDE</span>
+          <span className="text-text-muted/20 font-light">|</span>
+          <span className="text-text-muted font-normal">IDE</span>
         </span>
 
         {/* Section buttons */}
-        <div className="flex items-center gap-0.5">
+        <div className="flex items-center gap-1.5">
           {allSections.map((section) => {
             const isActive = activeSection === section.key;
             const gateKey = SECTION_GATE_MAP[section.key];
@@ -81,25 +80,24 @@ export function PersonaNav({
                 whileTap={{ scale: 0.97 }}
                 transition={{ duration: 0.12 }}
                 className={[
-                  "relative px-4 py-1.5 rounded-[var(--radius-button)] text-xs font-medium",
-                  "cursor-pointer transition-colors duration-150",
+                  "relative px-3.5 py-1.5 rounded-[var(--radius-button)] text-[13px] font-medium",
+                  "cursor-pointer transition-all duration-150",
                   isActive
-                    ? "bg-accent-dim text-accent border border-border-accent"
-                    : "text-text-muted hover:text-text-secondary hover:bg-white/[0.04] border border-transparent",
+                    ? "bg-accent/15 text-accent ring-1 ring-accent/25"
+                    : "text-text-muted hover:text-text-secondary hover:bg-white/[0.05]",
                 ].join(" ")}
               >
                 {section.label}
-
                 {gateKey && <GateDot complete={gateComplete ?? false} />}
               </motion.button>
             );
           })}
         </div>
 
-        {/* Right side: running indicator + persona badge */}
-        <div className="ml-auto flex items-center gap-3">
+        {/* Right: running + persona label */}
+        <div className="ml-auto flex items-center gap-4">
           {isRunning && (
-            <div className="flex items-center gap-1.5 text-xs text-accent">
+            <div className="flex items-center gap-2 text-xs text-accent">
               <span className="relative flex h-2 w-2">
                 <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-accent/40" />
                 <span className="relative inline-flex h-2 w-2 rounded-full bg-accent" />
@@ -108,7 +106,7 @@ export function PersonaNav({
             </div>
           )}
 
-          <span className="text-[11px] font-medium text-text-muted tracking-wide select-none">
+          <span className="text-xs font-medium text-text-muted/60 tracking-wider uppercase select-none">
             {config.label}
           </span>
         </div>

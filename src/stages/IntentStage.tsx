@@ -162,8 +162,8 @@ export function IntentStage({
         whileTap={{ scale: 0.97 }}
         whileHover={{ y: -1 }}
         className="
-          mt-4 max-w-xs mx-auto w-full py-2.5 rounded-[--radius-pill]
-          bg-accent text-bg text-sm font-medium
+          mt-5 w-full py-3 rounded-[--radius-button]
+          bg-accent text-bg text-sm font-semibold
           hover:brightness-110
           disabled:opacity-40 disabled:cursor-not-allowed
           transition-colors cursor-pointer
@@ -213,10 +213,10 @@ export function IntentStage({
               whileTap={{ scale: 0.97 }}
               whileHover={{ y: -1 }}
               className="
-                border border-border rounded-[--radius-pill] px-4 py-2
-                bg-transparent
+                rounded-[--radius-button] px-4 py-2
+                bg-surface-1 ring-1 ring-white/[0.08]
                 text-xs text-text-secondary
-                hover:bg-surface-1
+                hover:bg-surface-2 hover:ring-white/[0.12]
                 disabled:opacity-40
                 transition-colors cursor-pointer
               "
