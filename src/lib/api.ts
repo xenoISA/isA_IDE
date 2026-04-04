@@ -75,6 +75,35 @@ export async function listProjects(): Promise<Project[]> {
   return res.json();
 }
 
+// ─── Gate Approval (HIL) ─────────────────────────────────────────
+
+export async function approveGate(
+  sessionId: string,
+  gate: string
+): Promise<void> {
+  const res = await fetch(
+    `${CONFIG.vibe.baseUrl}/api/v1/sessions/${sessionId}/gates/${gate}/approve`,
+    { method: "POST" }
+  );
+  if (!res.ok) throw new Error(`Gate approve error: ${res.status}`);
+}
+
+export async function rejectGate(
+  sessionId: string,
+  gate: string,
+  feedback: string
+): Promise<void> {
+  const res = await fetch(
+    `${CONFIG.vibe.baseUrl}/api/v1/sessions/${sessionId}/gates/${gate}/reject`,
+    {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ feedback }),
+    }
+  );
+  if (!res.ok) throw new Error(`Gate reject error: ${res.status}`);
+}
+
 // ─── File Content (via Tauri IPC or Vibe API) ────────────────────
 
 export async function readFileContent(filePath: string): Promise<string> {

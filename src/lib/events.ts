@@ -1,4 +1,4 @@
-import type { OrchestrationEvent, SharedState, Stage } from "./types";
+import type { OrchestrationEvent, Persona, SharedState, Stage } from "./types";
 
 /**
  * Maps an orchestration event to the pipeline stage it corresponds to.
@@ -101,6 +101,42 @@ export function applyEvent(
     default:
       return state;
   }
+}
+
+/**
+ * Maps an orchestration event to a persona-specific section.
+ */
+export function eventToSection(
+  event: OrchestrationEvent,
+  persona: Persona
+): string | null {
+  if (event.type === "orchestrator_init" || event.type === "intent_classified") {
+    return "intent";
+  }
+
+  if (event.type === "team_delegated" || event.type === "team_complete") {
+    if (event.team === "product_team") {
+      // CDD complete — navigate to the persona's relevant section
+      return persona === "pm" ? "contracts"
+        : persona === "dev" ? "architecture"
+        : persona === "test" ? "scenarios"
+        : "infrastructure";
+    }
+    if (event.team === "dev_team") {
+      return persona === "pm" ? "progress"
+        : persona === "dev" ? "code"
+        : persona === "test" ? "results"
+        : "deploy";
+    }
+    if (event.team === "ops_team") {
+      return persona === "pm" ? "progress"
+        : persona === "dev" ? "code"
+        : persona === "test" ? "results"
+        : "health";
+    }
+  }
+
+  return null;
 }
 
 function teamToPhase(team?: string): SharedState["current_phase"] {

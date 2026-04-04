@@ -142,6 +142,100 @@ export interface HistoryEntry {
   details?: string;
 }
 
+// ─── Persona System ─────────────────────────────────────────────
+export type Persona = "pm" | "dev" | "test" | "ops";
+
+export interface PersonaSection {
+  key: string;
+  label: string;
+}
+
+export const PERSONA_CONFIG: Record<Persona, { label: string; description: string; sections: PersonaSection[] }> = {
+  pm: {
+    label: "Product",
+    description: "User stories, business rules, acceptance criteria",
+    sections: [
+      { key: "stories", label: "Stories" },
+      { key: "contracts", label: "Contracts" },
+      { key: "progress", label: "Progress" },
+      { key: "decisions", label: "Decisions" },
+    ],
+  },
+  dev: {
+    label: "Developer",
+    description: "Architecture, data models, code, logic correctness",
+    sections: [
+      { key: "architecture", label: "Architecture" },
+      { key: "models", label: "Models" },
+      { key: "code", label: "Code" },
+      { key: "logic", label: "Logic" },
+    ],
+  },
+  test: {
+    label: "Test",
+    description: "Coverage, scenarios, edge cases, results",
+    sections: [
+      { key: "coverage", label: "Coverage" },
+      { key: "scenarios", label: "Scenarios" },
+      { key: "results", label: "Results" },
+      { key: "edge-cases", label: "Edge Cases" },
+    ],
+  },
+  ops: {
+    label: "Operations",
+    description: "Infrastructure, deployment, health, configuration",
+    sections: [
+      { key: "infrastructure", label: "Infrastructure" },
+      { key: "deploy", label: "Deploy" },
+      { key: "health", label: "Health" },
+      { key: "config", label: "Config" },
+    ],
+  },
+};
+
+// ─── Parsed Data (persona-specific views of CDD/TDD) ────────────
+export interface BusinessRule {
+  id: string;
+  title: string;
+  description: string;
+  status: "verified" | "pending" | "failed";
+}
+
+export interface UserStory {
+  id: string;
+  as: string;
+  want: string;
+  soThat: string;
+  criteria: AcceptanceCriterion[];
+}
+
+export interface AcceptanceCriterion {
+  text: string;
+  status: "pass" | "fail" | "pending";
+}
+
+export interface DataModel {
+  name: string;
+  fields: { name: string; type: string; description: string }[];
+}
+
+export interface DomainEvent {
+  name: string;
+  description: string;
+}
+
+export interface ArchDecision {
+  title: string;
+  description: string;
+  rationale: string;
+}
+
+export interface RuleTestMapping {
+  ruleId: string;
+  ruleName: string;
+  tests: { name: string; layer: TestLayer; status: "pass" | "fail" | "skip" }[];
+}
+
 // ─── Helpers ─────────────────────────────────────────────────────
 export function emptySharedState(): SharedState {
   return {

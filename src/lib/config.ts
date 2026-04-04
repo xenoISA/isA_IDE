@@ -6,4 +6,5 @@ export const CONFIG = {
   orch: {
     baseUrl: import.meta.env.VITE_ORCH_URL ?? "http://localhost:8250",
   },
+  demoMode: import.meta.env.VITE_DEMO_MODE === "true" || true, // default to demo for now
 } as const;
