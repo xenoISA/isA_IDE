@@ -5,6 +5,7 @@ interface DevCodePanelProps {
   codeChanges: string[];
   coverage: number;
   allPassing: boolean;
+  mode?: "demo" | "live";
 }
 
 function CoverageBar({ coverage }: { coverage: number }) {
@@ -54,7 +55,7 @@ function StatusBadge({ allPassing }: { allPassing: boolean }) {
   );
 }
 
-export function DevCodePanel({ codeChanges, coverage, allPassing }: DevCodePanelProps) {
+export function DevCodePanel({ codeChanges, coverage, allPassing, mode = "demo" }: DevCodePanelProps) {
   return (
     <motion.div
       className="max-w-4xl space-y-5"
@@ -84,8 +85,8 @@ export function DevCodePanel({ codeChanges, coverage, allPassing }: DevCodePanel
         <CoverageBar coverage={coverage} />
       </div>
 
-      {/* Wrapped CodeStage */}
-      <CodeStage codeChanges={codeChanges} />
+      {/* Wrapped CodeStage with mode awareness */}
+      <CodeStage codeChanges={codeChanges} mode={mode} />
     </motion.div>
   );
 }
