@@ -15,6 +15,18 @@ import {
   MOCK_DATA_MODELS,
   MOCK_RULE_TEST_MAPPINGS,
 } from "./lib/mock-persona-data";
+import {
+  MOCK_SCENARIOS,
+  MOCK_EDGE_CASES,
+  MOCK_RULE_RESULTS,
+} from "./lib/mock-test-data";
+import {
+  MOCK_INFRA_REQUIREMENTS,
+  MOCK_DEPLOY_CHECKLIST,
+  MOCK_ENV_VARIABLES,
+  MOCK_HEALTH_CHECKS,
+  MOCK_HEALTH_RESPONSE,
+} from "./lib/mock-ops-data";
 import { PersonaPicker } from "./components/persona/PersonaPicker";
 import { PersonaNav } from "./components/persona/PersonaNav";
 import { Inspector } from "./components/layout/Inspector";
@@ -31,6 +43,16 @@ import { DevArchitecturePanel } from "./stages/dev/DevArchitecturePanel";
 import { DevModelsPanel } from "./stages/dev/DevModelsPanel";
 import { DevCodePanel } from "./stages/dev/DevCodePanel";
 import { DevLogicPanel } from "./stages/dev/DevLogicPanel";
+// Test panels
+import { TestCoveragePanel } from "./stages/test/TestCoveragePanel";
+import { TestScenariosPanel } from "./stages/test/TestScenariosPanel";
+import { TestResultsPanel } from "./stages/test/TestResultsPanel";
+import { TestEdgeCasesPanel } from "./stages/test/TestEdgeCasesPanel";
+// Ops panels
+import { OpsInfraPanel } from "./stages/ops/OpsInfraPanel";
+import { OpsDeployPanel } from "./stages/ops/OpsDeployPanel";
+import { OpsHealthPanel } from "./stages/ops/OpsHealthPanel";
+import { OpsConfigPanel } from "./stages/ops/OpsConfigPanel";
 
 type Mode = "demo" | "live";
 type PendingGate = "cdd_complete" | "tests_pass" | "deploy_success" | null;
@@ -240,10 +262,48 @@ export default function App() {
       }
     }
 
-    // Fallback for Test/Ops (Phase 2)
+    // Test persona sections
+    if (persona === "test") {
+      switch (activeSection) {
+        case "coverage":
+          return (
+            <TestCoveragePanel
+              ruleResults={MOCK_RULE_RESULTS}
+              mappings={MOCK_RULE_TEST_MAPPINGS}
+            />
+          );
+        case "scenarios":
+          return <TestScenariosPanel scenarios={MOCK_SCENARIOS} />;
+        case "results":
+          return <TestResultsPanel ruleResults={MOCK_RULE_RESULTS} />;
+        case "edge-cases":
+          return <TestEdgeCasesPanel edgeCases={MOCK_EDGE_CASES} />;
+      }
+    }
+
+    // Ops persona sections
+    if (persona === "ops") {
+      switch (activeSection) {
+        case "infrastructure":
+          return <OpsInfraPanel requirements={MOCK_INFRA_REQUIREMENTS} />;
+        case "deploy":
+          return <OpsDeployPanel checklist={MOCK_DEPLOY_CHECKLIST} />;
+        case "health":
+          return (
+            <OpsHealthPanel
+              checks={MOCK_HEALTH_CHECKS}
+              healthResponse={MOCK_HEALTH_RESPONSE}
+            />
+          );
+        case "config":
+          return <OpsConfigPanel variables={MOCK_ENV_VARIABLES} />;
+      }
+    }
+
+    // Fallback
     return (
       <div className="flex items-center justify-center h-full text-text-muted text-sm">
-        Coming soon
+        Section not found
       </div>
     );
   };
