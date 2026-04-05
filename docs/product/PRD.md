@@ -190,11 +190,100 @@ Navigation is **persona-first**, not pipeline-first. Users choose their role (Pr
 
 ---
 
+## Feature: Test Persona
+
+**Status**: Ready for dev
+**Priority**: P1-High
+**Why**: Test engineers need to see coverage, scenarios, and edge cases — not raw test files
+
+### Requirements
+
+- 4 sections: Coverage, Scenarios, Results, Edge Cases
+- Coverage matrix: business rule to test function mapping with pass/fail
+- Given/When/Then scenarios extracted from acceptance criteria
+- Edge case catalog from logic contract (EC-001, EC-002...)
+- Results grouped by business rule, not by test file
+
+### User Stories
+
+1. As a **test engineer**, I can see a coverage matrix mapping rules to tests
+2. As a **test engineer**, I can see acceptance criteria as Given/When/Then scenarios
+3. As a **test engineer**, I can see an edge case catalog from logic contracts
+4. As a **test engineer**, I can see results grouped by business rule
+
+---
+
+## Feature: Ops Persona
+
+**Status**: Ready for dev
+**Priority**: P1-High
+**Why**: DevOps needs infrastructure requirements, deployment checklists, and env config from system contracts
+
+### Requirements
+
+- 4 sections: Infrastructure, Deploy, Health, Config
+- Infrastructure requirements from L6 system contract (databases, queues, ports)
+- Deployment checklist with ready/missing status
+- Environment configuration table (variable, default, description)
+- Health check endpoints with expected responses
+
+### User Stories
+
+1. As a **DevOps engineer**, I can see infrastructure requirements from the system contract
+2. As a **DevOps engineer**, I can see a deployment checklist with status
+3. As a **DevOps engineer**, I can see environment configuration as a table
+4. As a **DevOps engineer**, I can see health check endpoints
+
+---
+
+## Feature: Live Vibe API Integration
+
+**Status**: Ready for dev
+**Priority**: P1-High
+**Why**: Connect the IDE to real isA_Vibe orchestration for end-to-end pipeline execution
+
+### Requirements
+
+- WebSocket connection to isA_Vibe stream endpoint (port 8240)
+- Real SharedState event parsing and state updates
+- File content loading from Vibe API for CDD layer preview
+- Connection status indicator (connected/disconnected/reconnecting)
+- Auto-reconnect with exponential backoff (3 retries)
+
+### User Stories
+
+1. As a **user**, clicking Go in Live mode connects to Vibe WebSocket and shows real events
+2. As a **user**, I can see connection status in the StatusBar
+3. As a **user**, I can expand CDD layers to see real file content
+
+---
+
+## Feature: Monaco Editor for Code Review
+
+**Status**: Ready for dev
+**Priority**: P2-Medium
+**Why**: Developers need syntax-highlighted code review for generated files
+
+### Requirements
+
+- Monaco editor loaded on-demand (dynamic import, code-split)
+- View generated files with syntax highlighting (Python, TypeScript, YAML)
+- File diff view for modified files (before/after)
+- Must not increase initial bundle size (lazy-load only when Code panel "View" is clicked)
+
+### User Stories
+
+1. As a **developer**, I can click "View" on a file to see it in a syntax-highlighted editor
+2. As a **developer**, the editor is lazy-loaded to keep initial load fast
+3. As a **developer**, I can view file diffs for modified files
+
+---
+
 ## Roadmap
 
 | Phase | Features | Status |
 |-------|----------|--------|
 | **Phase 1A** | Scaffold, Demo Mode, UI Shell, Persona System | Done |
-| **Phase 1B** (current) | UX Polish — breathing room, hierarchy, readability (#24) | In Progress |
-| **Phase 2** | Live Vibe API, Test + Ops personas, Monaco editor | Planned |
+| **Phase 1B** | UX Polish — breathing room, hierarchy, readability | Done |
+| **Phase 2** (current) | Test + Ops personas, Live API, Monaco editor | In Progress |
 | **Phase 3** | Orch integration, Offline mode, Collaboration | Planned |
