@@ -264,6 +264,7 @@ export default function App() {
               codeChanges={sharedState.tdd_outputs.code_changes}
               coverage={sharedState.tdd_outputs.coverage}
               allPassing={sharedState.tdd_outputs.all_passing}
+              mode={mode}
             />
           );
         case "logic":
