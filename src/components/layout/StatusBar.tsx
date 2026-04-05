@@ -14,6 +14,7 @@ interface StatusBarProps {
   onToggleMode?: () => void;
   persona?: Persona;
   onPersonaChange?: (p: Persona) => void;
+  vibeConnected?: boolean;
 }
 
 const PHASE_LABELS: Record<Phase, string> = {
@@ -31,6 +32,7 @@ export function StatusBar({
   onToggleMode,
   persona,
   onPersonaChange,
+  vibeConnected = false,
 }: StatusBarProps) {
   const gateCount = [
     gates.cdd_complete,
@@ -41,6 +43,16 @@ export function StatusBar({
   return (
     <footer className="mx-4 mb-3 mt-1">
       <div className="glass rounded-[var(--radius-outer)] ring-1 ring-white/[0.06] px-5 py-2.5 flex items-center text-xs gap-4">
+        {/* Vibe connection indicator */}
+        <div className="flex items-center gap-1.5" title={vibeConnected ? "Vibe API connected" : "Vibe API disconnected"}>
+          <span className={`w-1.5 h-1.5 rounded-full ${vibeConnected ? "bg-accent" : "bg-fail/60"}`} />
+          <span className="text-[0.625rem] text-text-ghost font-mono">
+            {vibeConnected ? "API" : "offline"}
+          </span>
+        </div>
+
+        <span className="w-px h-3 bg-border" />
+
         {/* Mode toggle pill */}
         <motion.button
           onClick={onToggleMode}

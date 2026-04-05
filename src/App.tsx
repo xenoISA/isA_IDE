@@ -1,4 +1,4 @@
-import { useState, useCallback, useRef } from "react";
+import { useState, useCallback, useRef, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import type { OrchestrationEvent } from "./lib/types";
 import { emptySharedState, PERSONA_CONFIG } from "./lib/types";
@@ -32,6 +32,7 @@ import { PersonaNav } from "./components/persona/PersonaNav";
 import { Inspector } from "./components/layout/Inspector";
 import { StatusBar } from "./components/layout/StatusBar";
 import { GateApprovalDialog } from "./components/ui/GateApprovalDialog";
+import { checkVibeHealth } from "./lib/api";
 import { IntentStage } from "./stages/IntentStage";
 // PM panels
 import { PMStoriesPanel } from "./stages/pm/PMStoriesPanel";
@@ -75,6 +76,20 @@ export default function App() {
   const [mode, setMode] = useState<Mode>("demo");
   const [inspectorCollapsed, setInspectorCollapsed] = useState(false);
   const [pendingGate, setPendingGate] = useState<PendingGate>(null);
+  const [vibeConnected, setVibeConnected] = useState(false);
+
+  // Check Vibe API health on mount and periodically
+  useEffect(() => {
+    let stopped = false;
+    async function check() {
+      if (stopped) return;
+      const ok = await checkVibeHealth();
+      setVibeConnected(ok);
+      setTimeout(check, 15000); // re-check every 15s
+    }
+    check();
+    return () => { stopped = true; };
+  }, []);
 
   const promptRef = useRef("");
   const projectRef = useRef("");
@@ -365,6 +380,7 @@ export default function App() {
           onToggleMode={handleToggleMode}
           persona={persona}
           onPersonaChange={setPersona}
+          vibeConnected={vibeConnected}
         />
       )}
 
