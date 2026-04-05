@@ -11,8 +11,8 @@ interface PersonaSwitcherProps {
 const ALL_PERSONAS: { key: Persona; disabled: boolean }[] = [
   { key: "pm", disabled: false },
   { key: "dev", disabled: false },
-  { key: "test", disabled: true },
-  { key: "ops", disabled: true },
+  { key: "test", disabled: false },
+  { key: "ops", disabled: false },
 ];
 
 function PersonaIcon({ persona, size = 14 }: { persona: Persona; size?: number }) {
